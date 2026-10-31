@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TERRA VISION — Geodata in Immersive 3D</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: #060607; }
+  body { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #f4f4f2; }
+  canvas { display: block; }
+  #hud {
+    position: fixed; top: 1rem; left: 1rem; z-index: 10;
+    background: rgba(6,6,7,.72); border: 1px solid rgba(244,244,242,.12);
+    padding: .9rem 1.1rem; font-size: .72rem; letter-spacing: .08em;
+    max-width: 280px; line-height: 1.6;
+  }
+  #hud .title { color: #6f8cff; letter-spacing: .2em; text-transform: uppercase; margin-bottom: .5rem; }
+  #hud .row { display: flex; justify-content: space-between; gap: 1rem; color: #9a9a97; }
+  #hud .row b { color: #f4f4f2; font-weight: 500; }
+  #controls {
+    position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); z-index: 10;
+    display: flex; align-items: center; gap: 1rem;
+    background: rgba(6,6,7,.72); border: 1px solid rgba(244,244,242,.12);
+    padding: .7rem 1.1rem; font-size: .72rem;
+  }
+  #controls input[type=range] { width: 180px; accent-color: #6f8cff; }
+  #controls button {
+    background: none; border: 1px solid rgba(244,244,242,.3); color: #f4f4f2;
+    font-family: inherit; font-size: .68rem; letter-spacing: .12em; text-transform: uppercase;
+    padding: .4rem .8rem; cursor: pointer; transition: border-color .25s;
+  }
+  #controls button:hover { border-color: #6f8cff; }
+  #controls label { color: #9a9a97; }
+  #measure { color: #6f8cff; min-width: 90px; }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="hud">
+  <div class="title">TERRA VISION</div>
+  <div class="row"><span>Terrain</span><b id="seed-label">seed 42</b></div>
+  <div class="row"><span>Mesure</span><b id="measure">click 2 pts</b></div>
+</div>
+<div id="controls">
+  <label>T0 <input type="range" id="time" min="0" max="100" value="0" /> T1</label>
+  <button id="reroll">Reroll terrain</button>
+  <button id="clear">Clear measure</button>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
