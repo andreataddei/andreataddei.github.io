@@ -3,245 +3,374 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Andrea Taddei - Creative Technologist</title>
-<meta name="description" content="Andrea Taddei — Creative Technologist. Frontend digital web solutions that make you sell." />
+<title>Andrea Taddei — XR · AI · Space &amp; Geospatial Data</title>
+<meta name="description" content="Andrea Taddei — engineer across XR, AI and data engineering, with a focus on space and geospatial data. Immersive systems, machine learning and the pipelines that turn raw signals into decisions." />
 <meta name="author" content="Andrea Taddei" />
 <link rel="canonical" href="https://andreataddei.github.io/" />
 <style>
+  :root {
+    --bg: #060607;
+    --bg2: #0a0a0c;
+    --fg: #f4f4f2;
+    --muted: #9a9a97;
+    --line: rgba(244,244,242,.12);
+    --accent: #6f8cff;
+    --mono: "SF Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; overflow: hidden; }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: "Raleway", "Helvetica Neue", Arial, sans-serif;
-    color: #f2ece9;
-    background: #0a0808;
+    background: var(--bg); color: var(--fg);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
-  canvas#scene { position: fixed; inset: 0; display: block; width: 100vw; height: 100vh; }
-  .overlay {
-    position: fixed; inset: 0; z-index: 10;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-align: center; pointer-events: none;
+  ::selection { background: var(--accent); color: #060607; }
+
+  #orbit { position: fixed; inset: 0; z-index: 0; display: block; }
+
+  .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 clamp(1.4rem, 5vw, 3rem); }
+
+  /* ---------- nav ---------- */
+  nav {
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: blur(10px);
+    background: rgba(6,6,7,.72);
+    border-bottom: 1px solid var(--line);
   }
-  .overlay h1 {
-    font-size: clamp(1.8rem, 6vw, 3.8rem);
-    font-weight: 300; letter-spacing: .35em; text-transform: uppercase;
-    text-indent: .35em;
-    text-shadow: 0 2px 40px rgba(8,6,6,.9);
+  nav .wrap { display: flex; justify-content: space-between; align-items: center; padding-top: 1.1rem; padding-bottom: 1.1rem; }
+  .brand { font-family: var(--mono); font-size: .82rem; letter-spacing: .14em; text-decoration: none; color: var(--fg); }
+  .brand b { color: var(--accent); font-weight: 600; }
+  nav ul { display: flex; gap: 2rem; list-style: none; }
+  nav ul a { color: var(--muted); text-decoration: none; font-size: .82rem; font-family: var(--mono); letter-spacing: .08em; transition: color .25s; }
+  nav ul a:hover { color: var(--fg); }
+
+  /* ---------- hero ---------- */
+  .hero { min-height: 92vh; display: flex; flex-direction: column; justify-content: center; position: relative; }
+  .kicker {
+    font-family: var(--mono); font-size: .75rem; letter-spacing: .3em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 1.6rem;
   }
-  .overlay p {
-    margin-top: .9rem; font-weight: 300; letter-spacing: .5em; text-indent: .5em;
-    text-transform: uppercase; font-size: .8rem; color: #dcb0a6;
+  h1 {
+    font-size: clamp(2.6rem, 8vw, 5.6rem);
+    font-weight: 600; letter-spacing: -.03em; line-height: 1.02;
+    max-width: 13ch;
   }
-  .social {
-    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
-    display: flex; gap: 1.4rem; z-index: 10;
+  .hero p.lede {
+    margin-top: 1.8rem; max-width: 34rem; color: var(--muted);
+    font-size: 1.06rem; line-height: 1.7;
   }
-  .social a {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 42px; height: 42px; border-radius: 50%;
-    border: 1px solid rgba(242,236,233,.3);
-    color: #f2ece9; text-decoration: none;
-    background: rgba(10,8,8,.35);
-    transition: border-color .35s, transform .35s, background .35s;
+  .hero .meta {
+    margin-top: 3rem; display: flex; gap: 2.5rem; flex-wrap: wrap;
+    font-family: var(--mono); font-size: .78rem; color: var(--muted); letter-spacing: .06em;
   }
-  .social a:hover {
-    border-color: #e08a72; background: rgba(224,110,84,.15);
-    transform: translateY(-3px);
+  .hero .meta span b { display: block; color: var(--fg); font-weight: 500; margin-bottom: .3rem; }
+
+  .scroll-cue {
+    position: absolute; bottom: 2.2rem; left: 0;
+    font-family: var(--mono); font-size: .68rem; letter-spacing: .25em;
+    color: var(--muted); text-transform: uppercase;
+    display: flex; align-items: center; gap: .8rem;
   }
-  .social svg { width: 17px; height: 17px; fill: currentColor; }
+  .scroll-cue::after { content: ""; width: 46px; height: 1px; background: var(--line); }
+
+  /* ---------- sections ---------- */
+  section { padding: 5.5rem 0 3.5rem; border-top: 1px solid var(--line); }
+  .sec-head { display: flex; align-items: baseline; gap: 1.2rem; margin-bottom: 2.6rem; }
+  .sec-head .num { font-family: var(--mono); font-size: .75rem; color: var(--accent); letter-spacing: .15em; }
+  .sec-head h2 { font-size: clamp(1.3rem, 3vw, 1.9rem); font-weight: 600; letter-spacing: -.01em; }
+  .sec-head .rule { flex: 1; height: 1px; background: var(--line); }
+
+  .areas { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .area { background: var(--bg); padding: 2rem 1.6rem 2.4rem; transition: background .3s; position: relative; }
+  .area:hover { background: var(--bg2); }
+  .area .idx { font-family: var(--mono); font-size: .72rem; color: var(--accent); letter-spacing: .2em; }
+  .area h3 { margin: 1.1rem 0 .8rem; font-size: 1.05rem; font-weight: 600; }
+  .area p { color: var(--muted); font-size: .9rem; line-height: 1.65; }
+  .area::after {
+    content: ""; position: absolute; left: 1.6rem; bottom: 1.4rem;
+    width: 0; height: 1px; background: var(--accent);
+    transition: width .35s;
+  }
+  .area:hover::after { width: 2.4rem; }
+
+  /* ---------- work ---------- */
+  .work { display: flex; flex-direction: column; }
+  .proj {
+    display: grid; grid-template-columns: 4rem 1fr auto; gap: 1.5rem; align-items: baseline;
+    padding: 1.7rem 0; border-bottom: 1px solid var(--line);
+    color: inherit; text-decoration: none;
+    transition: padding-left .3s;
+  }
+  .proj:hover { padding-left: .8rem; }
+  .proj .num { font-family: var(--mono); font-size: .75rem; color: var(--muted); }
+  .proj h3 { font-size: 1.15rem; font-weight: 600; }
+  .proj p { color: var(--muted); font-size: .88rem; margin-top: .45rem; line-height: 1.6; max-width: 46rem; }
+  .proj .tag { font-family: var(--mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+
+  /* ---------- contact ---------- */
+  .contact-box { text-align: center; padding: 6rem 0 7rem; }
+  .contact-box h2 { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 600; letter-spacing: -.02em; margin-bottom: 1.4rem; }
+  .contact-box p { color: var(--muted); margin-bottom: 2.4rem; }
+  .btn {
+    display: inline-block; padding: .95rem 2.2rem;
+    border: 1px solid var(--fg); color: var(--fg);
+    text-decoration: none; font-family: var(--mono);
+    font-size: .82rem; letter-spacing: .18em; text-transform: uppercase;
+    transition: background .3s, color .3s, border-color .3s;
+  }
+  .btn:hover { background: var(--fg); color: var(--bg); }
+
+  footer { border-top: 1px solid var(--line); }
+  footer .wrap {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 1.6rem; padding-bottom: 1.6rem; gap: 1rem; flex-wrap: wrap;
+    font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .08em;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--fg); }
+
+  /* reveal on scroll */
+  .rv { opacity: 0; transform: translateY(22px); transition: opacity .8s ease, transform .8s ease; }
+  .rv.on { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
+
+  @media (max-width: 640px) {
+    nav ul { gap: 1.1rem; }
+    .proj { grid-template-columns: 1fr; gap: .3rem; }
+    .proj .tag { grid-row: 1; justify-self: end; }
+  }
 </style>
 </head>
 <body>
-<canvas id="scene"></canvas>
 
-<div class="overlay">
-  <h1>Andrea Taddei</h1>
-  <p>Creative Technologist</p>
+<canvas id="orbit"></canvas>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="/">AT<b>/</b>ANDREA TADDEI</a>
+    <ul>
+      <li><a href="focus.html">Focus</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker rv">XR · AI · Space Data · Data Engineering</div>
+    <h1 class="rv">From orbit to insight.</h1>
+    <p class="lede rv">
+      I'm Andrea Taddei: I work across XR, AI and data engineering, with a focus
+      on space and geospatial data — satellite imagery, Earth observation, and
+      the systems that turn raw signals into decisions.
+    </p>
+    <div class="meta rv">
+      <span><b>Discipline</b>XR · AI · Data Engineering</span>
+      <span><b>Domain</b>Space &amp; Geospatial</span>
+      <span><b>Status</b>Open to new missions</span>
+    </div>
+    <div class="scroll-cue rv">Scroll</div>
+  </header>
+
+  <section id="focus">
+    <div class="sec-head rv">
+      <span class="num">01</span>
+      <h2>Focus</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="areas">
+      <div class="area rv">
+        <span class="idx">A</span>
+        <h3>Extended Reality</h3>
+        <p>Immersive interfaces and real-time 3D: spatial data workspaces, simulators and operator tooling where good interaction design is the difference between clarity and chaos.</p>
+      </div>
+      <div class="area rv">
+        <span class="idx">B</span>
+        <h3>AI &amp; Machine Learning</h3>
+        <p>From notebook to production: computer vision on satellite imagery, anomaly detection and predictive models that hold up in the field, not just in the lab.</p>
+      </div>
+      <div class="area rv">
+        <span class="idx">C</span>
+        <h3>Space &amp; Geodata</h3>
+        <p>Satellite imagery, Earth observation and GIS: ingestion, processing and analysis of raster and vector data — from raw scene to analysis-ready layer.</p>
+      </div>
+      <div class="area rv">
+        <span class="idx">D</span>
+        <h3>Data Engineering</h3>
+        <p>ETL/ELT pipelines, orchestration, cloud infrastructure and data models. The unglamorous parts done well: schemas, tests, observability.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="sec-head rv">
+      <span class="num">02</span>
+      <h2>Selected work</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="work">
+      <a class="proj rv" href="work.html">
+        <span class="num">001</span>
+        <div>
+          <h3>ATLAS — Satellite imagery pipeline</h3>
+          <p>Scenes to analysis-ready layers: reproducible correction, cloud masking, COG export and STAC cataloging.</p>
+        </div>
+        <span class="tag">EO · Data Engineering</span>
+      </a>
+      <a class="proj rv" href="work.html">
+        <span class="num">002</span>
+        <div>
+          <h3>MUTATIO — Change detection</h3>
+          <p>A Siamese U-Net that reads scene pairs over time and flags what actually changed, with confidence maps.</p>
+        </div>
+        <span class="tag">AI · Computer Vision</span>
+      </a>
+      <a class="proj rv" href="work.html">
+        <span class="num">003</span>
+        <div>
+          <h3>TERRA VISION — Geodata in immersive 3D</h3>
+          <p>Terrain and satellite layers as a walkable WebXR landscape: explore, scrub time between states, measure in space.</p>
+        </div>
+        <span class="tag">XR · Geospatial</span>
+      </a>
+    </div>
+  </section>
+
+  <section id="contact" style="border-top: none;">
+    <div class="contact-box rv">
+      <div class="kicker" style="text-align:center;">Let's talk</div>
+      <h2>Have a hard problem?</h2>
+      <p>Space data, geodata or pipelines — if it's ambitious, I want to hear about it.</p>
+      <a class="btn" href="mailto:your@email.com">Get in touch</a>
+    </div>
+  </section>
+
 </div>
 
-<div class="social">
-  <a href="https://vimeo.com/andreataddei" target="_blank" rel="noopener" aria-label="Vimeo">
-    <svg viewBox="0 0 24 24"><path d="M23.977 6.416c-.105 2.338-1.739 5.543-4.896 9.603-3.267 4.24-6.026 6.36-8.29 6.36-1.41 0-2.592-1.296-3.565-3.892l-1.946-7.148c-.72-2.592-1.494-3.888-2.323-3.888-.18 0-.81.378-1.89 1.132L0 6.946c1.197-1.05 2.376-2.1 3.537-3.15C5.12 2.336 6.302 1.69 7.11 1.614c1.874-.18 3.027 1.105 3.463 3.855.468 2.952.79 4.79.966 5.512.53 2.42 1.114 3.63 1.75 3.63.494 0 1.236-.78 2.227-2.34.99-1.56 1.52-2.747 1.575-3.565.105-1.35-.39-2.025-1.485-2.025-.527 0-1.073.12-1.634.36 1.086-3.55 3.16-5.275 6.26-5.185 2.282.062 3.357 1.555 3.226 4.47z"/></svg>
-  </a>
-  <a href="https://x.com/taddeiandrea" target="_blank" rel="noopener" aria-label="X / Twitter">
-    <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.875l-5.35-6.98-6.117 6.98H2.18l7.73-8.84L1.7 2.25h7.05l4.846 6.44 5.65-6.44zm-1.16 17.52h1.833L7.084 4.126H5.117l11.967 15.64z"/></svg>
-  </a>
-  <a href="https://www.linkedin.com/in/taddeiandrea" target="_blank" rel="noopener" aria-label="LinkedIn">
-    <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-  </a>
-</div>
+<footer>
+  <div class="wrap">
+    <span>© <span id="year"></span> ANDREA TADDEI</span>
+    <span>
+      <a href="https://www.linkedin.com/in/taddeiandrea" target="_blank" rel="noopener">LINKEDIN</a> ·
+      <a href="https://x.com/taddeiandrea" target="_blank" rel="noopener">X</a> ·
+      <a href="https://vimeo.com/andreataddei" target="_blank" rel="noopener">VIMEO</a> ·
+      <a href="https://github.com/andreataddei" target="_blank" rel="noopener">GITHUB</a>
+    </span>
+  </div>
+</footer>
 
 <script>
+// ---------- orbital background: wireframe globe + satellite ----------
 (function () {
-  // ============================================================
-  // Metaballs — grid approximation + marching squares
-  // Tutto in vanilla canvas: nessuna dipendenza esterna.
-  // ============================================================
-  var canvas = document.getElementById("scene");
-  var ctx = canvas.getContext("2d");
-
-  var CELL = 26;
-  var ISO  = 1.0;
-  var cols = 0, rows = 0, grid = [];
-
-  var PAL = [
-    [224, 138, 114],
-    [196, 106, 86],
-    [168, 84, 68],
-    [220, 176, 166],
-    [140, 64, 52],
-    [232, 168, 150],
-    [186, 120, 104]
-  ];
-
-  function softColor(t) {
-    var cyc = t * 0.06;
-    var i = Math.floor(cyc) % PAL.length;
-    var f = cyc - Math.floor(cyc);
-    var s = f * f * (3 - 2 * f);
-    var j = (i + 1) % PAL.length;
-    var mix = [];
-    for (var k = 0; k < 3; k++) mix.push(PAL[i][k] * (1 - s) + PAL[j][k] * s);
-    return mix;
-  }
-
-  var balls = [];
-  var N = 6;
-  for (var b = 0; b < N; b++) {
-    balls.push({
-      ax: 40 + Math.random() * 60,
-      ay: 30 + Math.random() * 45,
-      sx: 0.12 + Math.random() * 0.12,
-      sy: 0.14 + Math.random() * 0.12,
-      p: Math.random() * Math.PI * 2,
-      r: 55 + Math.random() * 45
-    });
-  }
-
+  var c = document.getElementById("orbit");
+  var x = c.getContext("2d");
+  var W, H, CX, CY, R;
   function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    cols = Math.ceil(canvas.width / CELL) + 1;
-    rows = Math.ceil(canvas.height / CELL) + 1;
-    grid = new Array(cols * rows);
+    W = c.width = window.innerWidth;
+    H = c.height = window.innerHeight;
+    CX = W * 0.78; CY = H * 0.42;
+    R = Math.min(W, H) * 0.30;
   }
-  window.addEventListener("resize", resize);
-  resize();
+  window.addEventListener("resize", resize); resize();
 
-  function field(x, y, t) {
-    var v = 0, cx, cy;
-    for (var i = 0; i < balls.length; i++) {
-      var B = balls[i];
-      cx = canvas.width / 2 + Math.sin(t * B.sx + B.p) * (canvas.width / 4.2 + B.ax);
-      cy = canvas.height / 2 + Math.cos(t * B.sy + B.p * 1.7) * (canvas.height / 3.4 + B.ay);
-      var rr = B.r * (1 + 0.18 * Math.sin(t * 0.5 + B.p));
-      var dx = x - cx, dy = y - cy;
-      var d2 = dx * dx + dy * dy;
-      if (d2 < 1) d2 = 1;
-      v += (rr * rr) / d2;
+  var ROT = 0;
+
+  function proj(px, py, pz) {
+    // ruota attorno all'asse Y, proietta prospettica
+    var rx = px * Math.cos(ROT) - pz * Math.sin(ROT);
+    var rz = px * Math.sin(ROT) + pz * Math.cos(ROT);
+    var s = 1 / (1 + rz / (R * 6));
+    return { x: CX + rx * s, y: CY + py * s, z: rz };
+  }
+
+  function circle3D(latSteps, fn) {
+    x.beginPath();
+    for (var i = 0; i <= latSteps; i++) {
+      var p = fn(i / latSteps * Math.PI * 2);
+      var pr = proj(p[0], p[1], p[2]);
+      if (i === 0) x.moveTo(pr.x, pr.y); else x.lineTo(pr.x, pr.y);
     }
-    return v;
   }
-
-  function lerp(a, b, f) { return a + (b - a) * f; }
 
   function draw() {
-    var t = performance.now() * 0.001;
+    ROT += 0.0016;
+    x.clearRect(0, 0, W, H);
 
-    ctx.fillStyle = "#0a0808";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    x.lineWidth = 1;
+    x.strokeStyle = "rgba(244,244,242,0.07)";
 
-    var col = softColor(t);
-    var strokeCol = "rgba(" + Math.round(col[0]) + "," + Math.round(col[1]) + "," + Math.round(col[2]) + ",0.9)";
-
-    ctx.globalCompositeOperation = "lighter";
-    for (var i = 0; i < balls.length; i++) {
-      var B = balls[i];
-      var cx = canvas.width / 2 + Math.sin(t * B.sx + B.p) * (canvas.width / 4.2 + B.ax);
-      var cy = canvas.height / 2 + Math.cos(t * B.sy + B.p * 1.7) * (canvas.height / 3.4 + B.ay);
-      var rr = B.r * (1 + 0.18 * Math.sin(t * 0.5 + B.p));
-      var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rr * 1.4);
-      g.addColorStop(0, "rgba(" + Math.round(col[0]) + "," + Math.round(col[1]) + "," + Math.round(col[2]) + ",0.14)");
-      g.addColorStop(1, "rgba(" + Math.round(col[0]) + "," + Math.round(col[1]) + "," + Math.round(col[2]) + ",0)");
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(cx, cy, rr * 1.4, 0, Math.PI * 2);
-      ctx.fill();
+    // meridiani
+    for (var m = 0; m < 12; m++) {
+      var a = m / 12 * Math.PI;
+      circle3D(64, function (t) {
+        return [Math.sin(t) * R * Math.cos(a), Math.cos(t) * R, Math.sin(t) * R * Math.sin(a)];
+      });
+      x.stroke();
     }
-    ctx.globalCompositeOperation = "source-over";
-
-    ctx.fillStyle = "rgba(220,176,166,0.10)";
-    for (var gy = 0; gy < rows; gy++) {
-      for (var gx = 0; gx < cols; gx++) {
-        ctx.fillRect(gx * CELL - 1, gy * CELL - 1, 2, 2);
-      }
+    // paralleli
+    for (var pa = 1; pa < 8; pa++) {
+      var phi = (pa / 8 - 0.5) * Math.PI;
+      var r2 = R * Math.cos(phi), py = R * Math.sin(phi);
+      circle3D(64, function (t) { return [Math.sin(t) * r2, py, Math.cos(t) * r2]; });
+      x.stroke();
     }
 
-    for (var yy = 0; yy < rows; yy++) {
-      for (var xx = 0; xx < cols; xx++) {
-        grid[yy * cols + xx] = field(xx * CELL, yy * CELL, t);
-      }
+    // orbita del satellite (inclinata)
+    var t = performance.now() * 0.00035;
+    x.strokeStyle = "rgba(111,140,255,0.35)";
+    circle3D(96, function (u) {
+      var ox = Math.sin(u) * R * 1.45, oz = Math.cos(u) * R * 1.45;
+      return [ox, oz * 0.35, oz]; // inclinazione: schiaccia la y con la z
+    });
+    x.stroke();
+
+    // satellite + scia
+    var su = t;
+    var sx = Math.sin(su) * R * 1.45;
+    var sz = Math.cos(su) * R * 1.45;
+    var sy = sz * 0.35;
+    x.strokeStyle = "rgba(111,140,255,0.5)";
+    x.beginPath();
+    for (var k = 0; k <= 40; k++) {
+      var u2 = su - k * 0.02;
+      var p2 = proj(Math.sin(u2) * R * 1.45, Math.cos(u2) * R * 1.45 * 0.35, Math.cos(u2) * R * 1.45);
+      if (k === 0) x.moveTo(p2.x, p2.y); else x.lineTo(p2.x, p2.y);
     }
+    x.stroke();
 
-    ctx.strokeStyle = strokeCol;
-    ctx.lineWidth = 1.6;
-    ctx.lineCap = "round";
+    var sat = proj(sx, sy, sz);
+    x.fillStyle = "#f4f4f2";
+    x.beginPath(); x.arc(sat.x, sat.y, 2.6, 0, Math.PI * 2); x.fill();
+    x.strokeStyle = "rgba(111,140,255,0.6)";
+    x.beginPath(); x.arc(sat.x, sat.y, 7, 0, Math.PI * 2); x.stroke();
 
-    for (var y = 0; y < rows - 1; y++) {
-      for (var x = 0; x < cols - 1; x++) {
-        var x0 = x * CELL, y0 = y * CELL;
-        var x1 = x0 + CELL, y1 = y0 + CELL;
-        var tl = grid[y * cols + x];
-        var tr = grid[y * cols + x + 1];
-        var bl = grid[(y + 1) * cols + x];
-        var br = grid[(y + 1) * cols + x + 1];
-
-        function frac(a, b) {
-          var den = b - a;
-          if (Math.abs(den) < 1e-9) return 0.5;
-          var f = (ISO - a) / den;
-          if (f < 0) f = 0; if (f > 1) f = 1;
-          return f;
-        }
-
-        var caseIndex = 0;
-        if (tl > ISO) caseIndex |= 8;
-        if (tr > ISO) caseIndex |= 4;
-        if (br > ISO) caseIndex |= 2;
-        if (bl > ISO) caseIndex |= 1;
-        if (caseIndex === 0 || caseIndex === 15) continue;
-
-        var top    = { x: lerp(x0, x1, frac(tl, tr)), y: y0 };
-        var right  = { x: x1, y: lerp(y0, y1, frac(tr, br)) };
-        var bottom = { x: lerp(x0, x1, frac(bl, br)), y: y1 };
-        var left   = { x: x0, y: lerp(y0, y1, frac(tl, bl)) };
-
-        ctx.beginPath();
-        switch (caseIndex) {
-          case 1:  case 14: ctx.moveTo(left.x, left.y); ctx.lineTo(bottom.x, bottom.y); break;
-          case 2:  case 13: ctx.moveTo(bottom.x, bottom.y); ctx.lineTo(right.x, right.y); break;
-          case 3:  case 12: ctx.moveTo(left.x, left.y); ctx.lineTo(right.x, right.y); break;
-          case 4:  case 11: ctx.moveTo(top.x, top.y); ctx.lineTo(right.x, right.y); break;
-          case 5:
-            ctx.moveTo(left.x, left.y); ctx.lineTo(top.x, top.y);
-            ctx.stroke(); ctx.beginPath();
-            ctx.moveTo(right.x, right.y); ctx.lineTo(bottom.x, bottom.y);
-            break;
-          case 6:  case 9:  ctx.moveTo(top.x, top.y); ctx.lineTo(bottom.x, bottom.y); break;
-          case 7:  case 8:  ctx.moveTo(left.x, left.y); ctx.lineTo(top.x, top.y); break;
-          case 10:
-            ctx.moveTo(left.x, left.y); ctx.lineTo(bottom.x, bottom.y);
-            ctx.stroke(); ctx.beginPath();
-            ctx.moveTo(top.x, top.y); ctx.lineTo(right.x, right.y);
-            break;
-        }
-        ctx.stroke();
-      }
+    // stelle fisse, tenui
+    x.fillStyle = "rgba(244,244,242,0.35)";
+    for (var s2 = 0; s2 < 60; s2++) {
+      var hx = (s2 * 137.5) % W, hy = (s2 * 89.7) % H;
+      x.fillRect(hx, hy, 1, 1);
     }
 
     requestAnimationFrame(draw);
   }
   draw();
 })();
+
+// ---------- reveal on scroll ----------
+(function () {
+  var els = document.querySelectorAll(".rv");
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add("on"); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function (el) { io.observe(el); });
+})();
+
+document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 </body>
 </html>
