@@ -279,38 +279,35 @@
   var ROT = 0;
 
   function proj(px, py, pz) {
-    // ruota attorno all'asse Y, proietta prospettica
     var rx = px * Math.cos(ROT) - pz * Math.sin(ROT);
     var rz = px * Math.sin(ROT) + pz * Math.cos(ROT);
     var s = 1 / (1 + rz / (R * 6));
     return { x: CX + rx * s, y: CY + py * s, z: rz };
   }
 
-  function circle3D(latSteps, fn, visible) {
-    visible = visible || function () { return true; };
-    // disegna solo i punti "visibili" (visible(pr) -> bool): il mondo e'
-    // opaco, cioe' che sta dietro la sfera non si vede
-    x.beginPath();
-    var pen = false;
-    for (var i = 0; i <= latSteps; i++) {
-      var p = fn(i / latSteps * Math.PI * 2);
-      var pr = proj(p[0], p[1], p[2]);
-      if (visible(pr)) {
-        if (pen) x.lineTo(pr.x, pr.y); else x.moveTo(pr.x, pr.y);
-        pen = true;
-      } else {
-        pen = false;
-      }
-    }
+  // un punto e' nascosto se sta dietro la sfera e ricade dentro il disco
+  function behindGlobe(pr) {
+    if (pr.z <= 0) return false;
+    var dx = pr.x - CX, dy = pr.y - CY;
+    return dx * dx + dy * dy < R * R;
   }
 
-  // un punto e' nascosto se sta dietro il globo e ricade dentro il disco
-  function behindGlobe(pr) {
-    if (pr.z <= 0) return false;               // davanti alla sfera
-    var dx = pr.x - CX, dy = pr.y - CY;
-    return dx * dx + dy * dy < R * R;          // dentro il disco proiettato
+  function gridCircle(fn, steps) {
+    // griglia a segmenti con dissolvenza al bordo: la linea sparisce
+    // gradualmente alla silhouette, niente "pop" ne' salti
+    for (var i = 0; i < steps; i++) {
+      var a = fn(i / steps * Math.PI * 2);
+      var b = fn((i + 1) / steps * Math.PI * 2);
+      var pa = proj(a[0], a[1], a[2]);
+      var pb = proj(b[0], b[1], b[2]);
+      var mz = (pa.z + pb.z) / 2;
+      if (mz > R * 0.15) continue;                  // dietro: coperto dal disco
+      var fade = 1 - Math.max(0, mz) / (R * 0.15);  // 1 davanti -> 0 al bordo
+      if (fade <= 0.02) continue;
+      x.strokeStyle = "rgba(244,244,242," + (0.07 * fade).toFixed(4) + ")";
+      x.beginPath(); x.moveTo(pa.x, pa.y); x.lineTo(pb.x, pb.y); x.stroke();
+    }
   }
-  function frontFace(pr) { return pr.z < 0; }  // emisfero frontale
 
   function draw() {
     ROT += 0.0016;
@@ -324,59 +321,59 @@
     }
 
     x.lineWidth = 1;
-    x.strokeStyle = "rgba(244,244,242,0.07)";
 
-    // orbita del satellite (inclinata)
+    // orbita completa e continua (la parte dietro verra' coperta dal disco)
     var t = performance.now() * 0.00035;
     x.strokeStyle = "rgba(111,140,255,0.35)";
-    circle3D(96, function (u) {
-      var ox = Math.sin(u) * R * 1.45, oz = Math.cos(u) * R * 1.45;
-      return [ox, oz * 0.35, oz]; // inclinazione: schiaccia la y con la z
-    });
+    x.beginPath();
+    for (var u = 0; u <= 96; u++) {
+      var uu = u / 96 * Math.PI * 2;
+      var o = proj(Math.sin(uu) * R * 1.45, Math.cos(uu) * R * 1.45 * 0.35, Math.cos(uu) * R * 1.45);
+      if (u === 0) x.moveTo(o.x, o.y); else x.lineTo(o.x, o.y);
+    }
     x.stroke();
 
-    // disco opaco del pianeta: copre stelle e orbita che passano dietro
+    // disco opaco del pianeta
     var g = x.createRadialGradient(CX, CY - R * 0.3, R * 0.1, CX, CY, R);
     g.addColorStop(0, "rgba(20,27,48,0.98)");
     g.addColorStop(1, "rgba(10,14,26,0.98)");
     x.fillStyle = g;
     x.beginPath(); x.arc(CX, CY, R, 0, Math.PI * 2); x.fill();
 
-    // meridiani
+    // griglia sopra il disco (meridiani + paralleli, con dissolvenza al bordo)
     for (var m = 0; m < 12; m++) {
-      var a = m / 12 * Math.PI;
-      circle3D(64, function (t) {
-        return [Math.sin(t) * R * Math.cos(a), Math.cos(t) * R, Math.sin(t) * R * Math.sin(a)];
-      }, frontFace);
-      x.stroke();
+      var am = m / 12 * Math.PI;
+      gridCircle(function (t2) {
+        return [Math.sin(t2) * R * Math.cos(am), Math.cos(t2) * R, Math.sin(t2) * R * Math.sin(am)];
+      }, 128);
     }
-    // paralleli
-    for (var pa = 1; pa < 8; pa++) {
-      var phi = (pa / 8 - 0.5) * Math.PI;
+    for (var pa2 = 1; pa2 < 8; pa2++) {
+      var phi = (pa2 / 8 - 0.5) * Math.PI;
       var r2 = R * Math.cos(phi), py = R * Math.sin(phi);
-      circle3D(64, function (t) { return [Math.sin(t) * r2, py, Math.cos(t) * r2]; }, frontFace);
-      x.stroke();
+      gridCircle(function (t2) { return [Math.sin(t2) * r2, py, Math.cos(t2) * r2]; }, 128);
     }
 
-
-    // satellite + scia
+    // scia: un intero giro di orbita dietro al satellite, con alpha decrescente.
+    // Ocultata SOLO dove passa davvero dietro il globo: la parte davanti alla
+    // sfera resta sempre visibile.
     var su = t;
-    var sx = Math.sin(su) * R * 1.45;
-    var sz = Math.cos(su) * R * 1.45;
-    var sy = sz * 0.35;
-    x.strokeStyle = "rgba(111,140,255,0.5)";
-    x.beginPath();
-    var pen2 = false;
-    for (var k = 0; k <= 40; k++) {
-      var u2 = su - k * 0.02;
+    var TRAILN = 160, STEP = Math.PI * 2 / 160;
+    var prev = null;
+    for (var k = 0; k <= TRAILN; k++) {
+      var u2 = su - k * STEP;
       var p2 = proj(Math.sin(u2) * R * 1.45, Math.cos(u2) * R * 1.45 * 0.35, Math.cos(u2) * R * 1.45);
-      if (behindGlobe(p2)) { pen2 = false; continue; }  // scia occultata dietro il globo
-      if (pen2) x.lineTo(p2.x, p2.y); else { x.moveTo(p2.x, p2.y); pen2 = true; }
+      if (behindGlobe(p2)) { prev = null; continue; }
+      var alpha = 0.5 * Math.pow(1 - k / TRAILN, 1.5);
+      if (prev) {
+        x.strokeStyle = "rgba(111,140,255," + alpha.toFixed(4) + ")";
+        x.beginPath(); x.moveTo(prev.x, prev.y); x.lineTo(p2.x, p2.y); x.stroke();
+      }
+      prev = p2;
     }
-    x.stroke();
 
-    var sat = proj(sx, sy, sz);
-    if (!behindGlobe(sat)) {                  // satellite occultato dietro il globo
+    // satellite (occultato solo quando sta davvero dietro il globo)
+    var sat = proj(Math.sin(su) * R * 1.45, Math.cos(su) * R * 1.45 * 0.35, Math.cos(su) * R * 1.45);
+    if (!behindGlobe(sat)) {
       x.fillStyle = "#f4f4f2";
       x.beginPath(); x.arc(sat.x, sat.y, 2.6, 0, Math.PI * 2); x.fill();
       x.strokeStyle = "rgba(111,140,255,0.6)";
@@ -387,6 +384,7 @@
   }
   draw();
 })();
+
 
 // ---------- reveal on scroll ----------
 (function () {
