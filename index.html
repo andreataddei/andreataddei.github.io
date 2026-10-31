@@ -315,6 +315,13 @@
     ROT += 0.0016;
     x.clearRect(0, 0, W, H);
 
+    // stelle fisse, tenui (disegnate per prime: dietro la sfera restano coperte)
+    x.fillStyle = "rgba(244,244,242,0.35)";
+    for (var s2 = 0; s2 < 60; s2++) {
+      var hx = (s2 * 137.5) % W, hy = (s2 * 89.7) % H;
+      x.fillRect(hx, hy, 1, 1);
+    }
+
     x.lineWidth = 1;
     x.strokeStyle = "rgba(244,244,242,0.07)";
 
@@ -340,8 +347,15 @@
     circle3D(96, function (u) {
       var ox = Math.sin(u) * R * 1.45, oz = Math.cos(u) * R * 1.45;
       return [ox, oz * 0.35, oz]; // inclinazione: schiaccia la y con la z
-    }, function (pr) { return !behindGlobe(pr); });
+    });
     x.stroke();
+
+    // disco opaco del pianeta: copre stelle e orbita che passano dietro
+    var g = x.createRadialGradient(CX, CY - R * 0.3, R * 0.1, CX, CY, R);
+    g.addColorStop(0, "rgba(20,27,48,0.98)");
+    g.addColorStop(1, "rgba(10,14,26,0.98)");
+    x.fillStyle = g;
+    x.beginPath(); x.arc(CX, CY, R, 0, Math.PI * 2); x.fill();
 
     // satellite + scia
     var su = t;
@@ -354,7 +368,7 @@
     for (var k = 0; k <= 40; k++) {
       var u2 = su - k * 0.02;
       var p2 = proj(Math.sin(u2) * R * 1.45, Math.cos(u2) * R * 1.45 * 0.35, Math.cos(u2) * R * 1.45);
-      if (behindGlobe(p2)) continue;             // scia occultata dietro il globo
+      if (behindGlobe(p2)) { pen2 = false; continue; }  // scia occultata dietro il globo
       if (pen2) x.lineTo(p2.x, p2.y); else { x.moveTo(p2.x, p2.y); pen2 = true; }
     }
     x.stroke();
@@ -365,13 +379,6 @@
       x.beginPath(); x.arc(sat.x, sat.y, 2.6, 0, Math.PI * 2); x.fill();
       x.strokeStyle = "rgba(111,140,255,0.6)";
       x.beginPath(); x.arc(sat.x, sat.y, 7, 0, Math.PI * 2); x.stroke();
-    }
-
-    // stelle fisse, tenui
-    x.fillStyle = "rgba(244,244,242,0.35)";
-    for (var s2 = 0; s2 < 60; s2++) {
-      var hx = (s2 * 137.5) % W, hy = (s2 * 89.7) % H;
-      x.fillRect(hx, hy, 1, 1);
     }
 
     requestAnimationFrame(draw);
