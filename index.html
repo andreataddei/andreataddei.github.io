@@ -263,7 +263,7 @@
 </footer>
 
 <script>
-// ---------- orbital background: Terra reale, ISS, costellazioni ----------
+// ---------- orbital background: Terra reale, ISS, Starlink, Sentinel-2 ----------
 (function () {
   var c = document.getElementById("orbit");
   var x = c.getContext("2d");
@@ -314,7 +314,6 @@
       for (var i = 0, p = 0; i < lum.length; i++, p += 4) {
         lum[i] = (d[p] * 77 + d[p + 1] * 151 + d[p + 2] * 28) >> 8;
       }
-      // luminanza sfocata (box blur 3x3): i rilievi risultano morbidi, niente sfarfallio
       var blur = new Uint8Array(TW * TH);
       for (var y = 0; y < TH; y++) {
         var yu = y > 0 ? y - 1 : 0, yd = y < THm ? y + 1 : THm;
@@ -328,14 +327,12 @@
       }
       tex.data = d; tex.lum = blur;
       tex.ready = true;
-      rebuildSphere();   // forza il rebuild quando la texture arriva
+      rebuildSphere();
     } catch (e) { /* resta il fallback */ }
   }
 
   img.onload = buildTexture;
-  img.onerror = function () {
-    if (!triedCDN) { loadFromCDN(); }
-  };
+  img.onerror = function () { if (!triedCDN) { loadFromCDN(); } };
   img.crossOrigin = "anonymous";
 
   function loadFromRepo() {
@@ -380,7 +377,6 @@
 
   function drawPlanet() {
     if (tex.ready && sphereImg) {
-      // aggiorna la sfera ogni 3 frame (rotazione lenta: impercettibile, niente flicker)
       frame++;
       if (texDirty || frame % 3 === 0) {
         texDirty = false;
@@ -491,29 +487,18 @@
     }
   }
 
-  function orbitPoint(u, r, tilt) {
-    return proj(Math.sin(u) * r, Math.cos(u) * r * tilt, Math.cos(u) * r);
+  // orbita circolare reale: inclinazione i in radianti (piano orbitale inclinato)
+  function orbitPoint(u, r, inc) {
+    var si = Math.sin(inc), ci = Math.cos(inc);
+    return proj(Math.cos(u) * r, Math.sin(u) * r * si, Math.sin(u) * r * ci);
   }
 
-  function drawRing(r, tilt, alpha) {
-    x.strokeStyle = "rgba(111,140,255," + alpha + ")";
-    x.beginPath();
-    var pen = false;
-    for (var u = 0; u <= 128; u++) {
-      var pr = orbitPoint(u / 128 * Math.PI * 2, r, tilt);
-      if (behindGlobe(pr)) { pen = false; }
-      else {
-        if (pen) x.lineTo(pr.x, pr.y); else { x.moveTo(pr.x, pr.y); pen = true; }
-      }
-    }
-    x.stroke();
-  }
-
-  function drawTrail(su, r, tilt, maxAlpha, span, N) {
+  // breve scia comet su entrambi i lati del satellite (solo un po' di scia)
+  function drawTrail(su, r, inc, maxAlpha, span, N) {
     var prev = null;
     for (var k = -N; k <= N; k++) {
       var u2 = su + k * span / N;
-      var p2 = orbitPoint(u2, r, tilt);
+      var p2 = orbitPoint(u2, r, inc);
       var alpha = maxAlpha * (1 - Math.abs(k) / (N + 1));
       if (behindGlobe(p2)) { prev = null; continue; }
       if (prev) {
@@ -524,10 +509,10 @@
     }
   }
 
-  function drawSatellite(su, r, tilt, isISS) {
-    var sat = orbitPoint(su, r, tilt);
+  function drawSatellite(su, r, inc, kind) {
+    var sat = orbitPoint(su, r, inc);
     if (behindGlobe(sat)) return;
-    if (isISS) {
+    if (kind === "iss") {
       x.strokeStyle = "rgba(159,180,255,0.9)";
       x.lineWidth = 1.4;
       x.beginPath(); x.moveTo(sat.x - 6, sat.y); x.lineTo(sat.x - 2.5, sat.y);
@@ -537,6 +522,17 @@
       x.fillStyle = "rgba(159,180,255,0.55)";
       x.font = "9px monospace";
       x.fillText("ISS", sat.x + 9, sat.y + 3);
+    } else if (kind === "sentinel") {
+      x.fillStyle = "#f4f4f2";
+      x.beginPath(); x.arc(sat.x, sat.y, 2.4, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = "rgba(111,140,255,0.6)";
+      x.beginPath(); x.arc(sat.x, sat.y, 6.5, 0, Math.PI * 2); x.stroke();
+      x.fillStyle = "rgba(159,180,255,0.55)";
+      x.font = "9px monospace";
+      x.fillText("SENTINEL-2", sat.x + 10, sat.y + 3);
+    } else if (kind === "starlink") {
+      x.fillStyle = "rgba(244,244,242,0.85)";
+      x.beginPath(); x.arc(sat.x, sat.y, 1.4, 0, Math.PI * 2); x.fill();
     } else {
       x.fillStyle = "#f4f4f2";
       x.beginPath(); x.arc(sat.x, sat.y, 2.6, 0, Math.PI * 2); x.fill();
@@ -544,6 +540,13 @@
       x.beginPath(); x.arc(sat.x, sat.y, 7, 0, Math.PI * 2); x.stroke();
     }
   }
+
+  // costanti orbitali reali (inclinazioni vere, raggi in unita' Terra leggermente esagerati)
+  var INC_ISS = 51.6 * Math.PI / 180;        // ISS
+  var INC_SL  = 53.0 * Math.PI / 180;        // Starlink
+  var INC_S2  = 98.6 * Math.PI / 180;        // Sentinel-2 (eliosincrona)
+  var R_ISS = 1.10, R_SL = 1.13, R_S2 = 1.24;
+  var SLN = 7;                                // satelliti nel treno Starlink
 
   function draw() {
     ROT += 0.0016;
@@ -554,11 +557,6 @@
     drawSky(drift);
 
     x.lineWidth = 1;
-
-    var TILT_LEO = Math.tan(51.6 * Math.PI / 180);
-    drawRing(R * 1.45, 0.35, 0.35);
-    drawRing(R * 1.10, TILT_LEO, 0.13);
-    drawRing(R * 1.30, -6.0, 0.08);
 
     var glow = x.createRadialGradient(CX, CY, R * 0.82, CX, CY, R * 1.30);
     glow.addColorStop(0, "rgba(111,140,255,0.30)");
@@ -581,21 +579,28 @@
       gridCircle(function (t2) { return [Math.sin(t2) * r2, py, Math.cos(t2) * r2]; }, 128);
     }
 
-    var su1 = now * 0.00035;
-    var suISS = now * 0.00080;
-    var suPolar = -now * 0.00022;
-    drawTrail(su1, R * 1.45, 0.35, 0.55, 1.1, 55);
-    drawTrail(suISS, R * 1.10, TILT_LEO, 0.45, 0.9, 45);
-    drawTrail(suPolar, R * 1.30, -6.0, 0.30, 0.7, 35);
+    // ---- scie e satelliti (niente anelli: solo un po' di scia) ----
+    var suISS = now * 0.00080;                 // ISS: orbita in ~92 min (qui accelerata)
+    var suSL  = now * 0.00045;                 // Starlink
+    var suS2  = now * 0.00018;                 // Sentinel-2
 
-    drawSatellite(su1, R * 1.45, 0.35, false);
-    drawSatellite(suISS, R * 1.10, TILT_LEO, true);
-    drawSatellite(suPolar, R * 1.30, -6.0, false);
+    drawTrail(suS2, R * R_S2, INC_S2, 0.55, 0.5, 28);
+    drawSatellite(suS2, R * R_S2, INC_S2, "sentinel");
+
+    drawTrail(suISS, R * R_ISS, INC_ISS, 0.45, 0.45, 24);
+    drawSatellite(suISS, R * R_ISS, INC_ISS, "iss");
+
+    for (var k2 = 0; k2 < SLN; k2++) {
+      var su = suSL + k2 * (Math.PI * 2 / SLN);
+      drawTrail(su, R * R_SL, INC_SL, 0.28, 0.22, 10);
+      drawSatellite(su, R * R_SL, INC_SL, "starlink");
+    }
 
     requestAnimationFrame(draw);
   }
   draw();
 })();
+;
 ;
 ;
 ;
