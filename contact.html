@@ -39,6 +39,31 @@
 
   .contact-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; padding: 2rem 0 6rem; }
   .channels { border-top: 1px solid var(--line); }
+  .cform { margin-top: 2.4rem; }
+  .cform .flabel { font-family: var(--mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); margin-bottom: .8rem; }
+  .cform input, .cform textarea {
+    display: block; width: 100%; box-sizing: border-box;
+    background: transparent; border: 1px solid var(--line);
+    color: var(--fg); font: inherit; font-size: .95rem;
+    padding: .8rem 1rem; margin-bottom: 1rem; border-radius: 2px;
+    transition: border-color .25s;
+  }
+  .cform input:focus, .cform textarea:focus { outline: none; border-color: var(--accent); }
+  .cform textarea { min-height: 7.5rem; resize: vertical; }
+  .cform .hp { position: absolute; left: -9999px; opacity: 0; }   /* honeypot anti-spam */
+  .cform button {
+    background: transparent; border: 1px solid var(--fg); color: var(--fg);
+    font-family: var(--mono); font-size: .84rem; letter-spacing: .18em; text-transform: uppercase;
+    padding: 1.05rem 2.6rem; cursor: pointer;
+    transition: background .3s, color .3s;
+  }
+  .cform button:hover { background: var(--fg); color: var(--bg); }
+  .cform .sent {
+    display: none; border: 1px solid var(--accent); color: var(--accent);
+    font-family: var(--mono); font-size: .8rem; letter-spacing: .12em;
+    padding: 1rem 1.2rem; margin-top: 1.2rem; border-radius: 2px;
+  }
+  .cform .sent.on { display: block; }
   .channel {
     display: flex; justify-content: space-between; align-items: center; gap: 1rem;
     padding: 1.4rem 0; border-bottom: 1px solid var(--line);
@@ -115,11 +140,6 @@
 
   <div class="contact-grid">
     <div class="channels rv">
-      <a class="channel" href="mailto:your@email.com">
-        <span class="label">Email</span>
-        <span class="value">your@email.com</span>
-        <span class="arrow">→</span>
-      </a>
       <a class="channel" href="https://www.linkedin.com/in/taddeiandrea" target="_blank" rel="noopener">
         <span class="label">LinkedIn</span>
         <span class="value">/in/taddeiandrea</span>
@@ -136,6 +156,18 @@
         <span class="arrow">→</span>
       </a>
     </div>
+
+    <form class="cform rv" id="cform" action="https://formsubmit.co/your@email.com" method="POST">
+      <div class="flabel">Direct transmission</div>
+      <input type="text" name="name" placeholder="Your name" required>
+      <input type="email" name="email" placeholder="Your email" required>
+      <textarea name="message" placeholder="Your message" required></textarea>
+      <input class="hp" type="text" name="_honey" tabindex="-1" autocomplete="off">
+      <input type="hidden" name="_subject" value="Messaggio dal sito andreataddei.github.io">
+      <input type="hidden" name="_next" value="https://andreataddei.github.io/contact.html?sent=1">
+      <button type="submit">Send message</button>
+      <div class="sent" id="sent">Message received. I'll get back to you within 48h.</div>
+    </form>
 
     <aside class="info-card rv">
       <h2>Transmission info</h2>
@@ -159,7 +191,7 @@
   </div>
 
   <div class="big-cta rv">
-    <a class="btn" href="mailto:your@email.com">Start the conversation</a>
+    <a class="btn" href="#cform">Start the conversation</a>
   </div>
 
 </div>
@@ -550,6 +582,9 @@
 })();
 
 document.getElementById("year").textContent = new Date().getFullYear();
+if (new URLSearchParams(window.location.search).get("sent") === "1") {
+  document.getElementById("sent").classList.add("on");
+}
 </script>
 </body>
 </html>
