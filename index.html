@@ -286,14 +286,30 @@
     return { x: CX + rx * s, y: CY + py * s, z: rz };
   }
 
-  function circle3D(latSteps, fn) {
+  function circle3D(latSteps, fn, visible) {
+    // disegna solo i punti "visibili" (visible(pr) -> bool): il mondo e'
+    // opaco, cioe' che sta dietro la sfera non si vede
     x.beginPath();
+    var pen = false;
     for (var i = 0; i <= latSteps; i++) {
       var p = fn(i / latSteps * Math.PI * 2);
       var pr = proj(p[0], p[1], p[2]);
-      if (i === 0) x.moveTo(pr.x, pr.y); else x.lineTo(pr.x, pr.y);
+      if (visible(pr)) {
+        if (pen) x.lineTo(pr.x, pr.y); else x.moveTo(pr.x, pr.y);
+        pen = true;
+      } else {
+        pen = false;
+      }
     }
   }
+
+  // un punto e' nascosto se sta dietro il globo e ricade dentro il disco
+  function behindGlobe(pr) {
+    if (pr.z <= 0) return false;               // davanti alla sfera
+    var dx = pr.x - CX, dy = pr.y - CY;
+    return dx * dx + dy * dy < R * R;          // dentro il disco proiettato
+  }
+  function frontFace(pr) { return pr.z < 0; }  // emisfero frontale
 
   function draw() {
     ROT += 0.0016;
@@ -307,14 +323,14 @@
       var a = m / 12 * Math.PI;
       circle3D(64, function (t) {
         return [Math.sin(t) * R * Math.cos(a), Math.cos(t) * R, Math.sin(t) * R * Math.sin(a)];
-      });
+      }, frontFace);
       x.stroke();
     }
     // paralleli
     for (var pa = 1; pa < 8; pa++) {
       var phi = (pa / 8 - 0.5) * Math.PI;
       var r2 = R * Math.cos(phi), py = R * Math.sin(phi);
-      circle3D(64, function (t) { return [Math.sin(t) * r2, py, Math.cos(t) * r2]; });
+      circle3D(64, function (t) { return [Math.sin(t) * r2, py, Math.cos(t) * r2]; }, frontFace);
       x.stroke();
     }
 
@@ -324,7 +340,7 @@
     circle3D(96, function (u) {
       var ox = Math.sin(u) * R * 1.45, oz = Math.cos(u) * R * 1.45;
       return [ox, oz * 0.35, oz]; // inclinazione: schiaccia la y con la z
-    });
+    }, function (pr) { return !behindGlobe(pr); });
     x.stroke();
 
     // satellite + scia
@@ -334,18 +350,22 @@
     var sy = sz * 0.35;
     x.strokeStyle = "rgba(111,140,255,0.5)";
     x.beginPath();
+    var pen2 = false;
     for (var k = 0; k <= 40; k++) {
       var u2 = su - k * 0.02;
       var p2 = proj(Math.sin(u2) * R * 1.45, Math.cos(u2) * R * 1.45 * 0.35, Math.cos(u2) * R * 1.45);
-      if (k === 0) x.moveTo(p2.x, p2.y); else x.lineTo(p2.x, p2.y);
+      if (behindGlobe(p2)) continue;             // scia occultata dietro il globo
+      if (pen2) x.lineTo(p2.x, p2.y); else { x.moveTo(p2.x, p2.y); pen2 = true; }
     }
     x.stroke();
 
     var sat = proj(sx, sy, sz);
-    x.fillStyle = "#f4f4f2";
-    x.beginPath(); x.arc(sat.x, sat.y, 2.6, 0, Math.PI * 2); x.fill();
-    x.strokeStyle = "rgba(111,140,255,0.6)";
-    x.beginPath(); x.arc(sat.x, sat.y, 7, 0, Math.PI * 2); x.stroke();
+    if (!behindGlobe(sat)) {                  // satellite occultato dietro il globo
+      x.fillStyle = "#f4f4f2";
+      x.beginPath(); x.arc(sat.x, sat.y, 2.6, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = "rgba(111,140,255,0.6)";
+      x.beginPath(); x.arc(sat.x, sat.y, 7, 0, Math.PI * 2); x.stroke();
+    }
 
     // stelle fisse, tenui
     x.fillStyle = "rgba(244,244,242,0.35)";
