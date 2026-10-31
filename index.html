@@ -1,132 +1,247 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Andrea Taddei</title>
+<title>Andrea Taddei - Creative Technologist</title>
+<meta name="description" content="Andrea Taddei — Creative Technologist. Frontend digital web solutions that make you sell." />
+<meta name="author" content="Andrea Taddei" />
+<link rel="canonical" href="https://andreataddei.github.io/" />
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --bg: #0b0e14;
-    --fg: #e8ecf4;
-    --muted: #8b93a7;
-    --accent: #6ea8fe;
-    --accent2: #9d7bff;
-    --card: rgba(255,255,255,.04);
-    --border: rgba(255,255,255,.09);
-  }
-  html { scroll-behavior: smooth; }
+  html, body { height: 100%; overflow: hidden; }
   body {
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: var(--bg); color: var(--fg);
-    min-height: 100vh; overflow-x: hidden;
+    font-family: "Raleway", "Helvetica Neue", Arial, sans-serif;
+    color: #f2ece9;
+    background: #0a0808;
   }
-  .glow { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
-  .glow::before, .glow::after {
-    content: ""; position: absolute; width: 55vmax; height: 55vmax; border-radius: 50%;
-    filter: blur(90px); opacity: .18;
+  canvas#scene { position: fixed; inset: 0; display: block; width: 100vw; height: 100vh; }
+  .overlay {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; pointer-events: none;
   }
-  .glow::before { background: var(--accent); top: -20vmax; left: -15vmax; animation: drift 18s ease-in-out infinite alternate; }
-  .glow::after { background: var(--accent2); bottom: -25vmax; right: -15vmax; animation: drift 22s ease-in-out infinite alternate-reverse; }
-  @keyframes drift { to { transform: translate(8vmax, 6vmax) scale(1.15); } }
-  nav {
-    position: sticky; top: 0; z-index: 10;
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 1rem clamp(1.2rem, 5vw, 4rem);
-    backdrop-filter: blur(12px);
-    background: rgba(11,14,20,.6); border-bottom: 1px solid var(--border);
+  .overlay h1 {
+    font-size: clamp(1.8rem, 6vw, 3.8rem);
+    font-weight: 300; letter-spacing: .35em; text-transform: uppercase;
+    text-indent: .35em;
+    text-shadow: 0 2px 40px rgba(8,6,6,.9);
   }
-  .logo { font-weight: 700; letter-spacing: .02em; }
-  .logo span { color: var(--accent); }
-  nav ul { display: flex; gap: 1.6rem; list-style: none; }
-  nav a { color: var(--muted); text-decoration: none; font-size: .92rem; transition: color .2s; }
-  nav a:hover { color: var(--fg); }
-  main { max-width: 880px; margin: 0 auto; padding: 0 clamp(1.2rem, 5vw, 2rem); }
-  header.hero { padding: clamp(4rem, 12vh, 7rem) 0 4rem; }
-  .hero .kicker {
-    color: var(--accent); font-size: .85rem; font-weight: 600;
-    text-transform: uppercase; letter-spacing: .18em; margin-bottom: 1rem;
+  .overlay p {
+    margin-top: .9rem; font-weight: 300; letter-spacing: .5em; text-indent: .5em;
+    text-transform: uppercase; font-size: .8rem; color: #dcb0a6;
   }
-  .hero h1 {
-    font-size: clamp(2.4rem, 7vw, 4.2rem); line-height: 1.05; font-weight: 800;
-    background: linear-gradient(90deg, var(--fg) 40%, var(--accent) 75%, var(--accent2));
-    -webkit-background-clip: text; background-clip: text; color: transparent;
+  .social {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 1.4rem; z-index: 10;
   }
-  .hero p.sub { margin-top: 1.3rem; color: var(--muted); font-size: 1.1rem; max-width: 34rem; line-height: 1.65; }
-  .hero .cta { margin-top: 2.2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
-  .btn {
-    display: inline-block; padding: .8rem 1.5rem; border-radius: 10px;
-    text-decoration: none; font-weight: 600; font-size: .95rem; transition: transform .2s, box-shadow .2s;
+  .social a {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid rgba(242,236,233,.3);
+    color: #f2ece9; text-decoration: none;
+    background: rgba(10,8,8,.35);
+    transition: border-color .35s, transform .35s, background .35s;
   }
-  .btn.primary { background: linear-gradient(90deg, var(--accent), var(--accent2)); color: #0b0e14; box-shadow: 0 6px 24px rgba(110,168,254,.25); }
-  .btn.ghost { border: 1px solid var(--border); color: var(--fg); background: var(--card); }
-  .btn:hover { transform: translateY(-2px); }
-  section { padding: 3.2rem 0; }
-  h2 { font-size: 1.35rem; margin-bottom: 1.4rem; display: flex; align-items: center; gap: .7rem; }
-  h2::after { content: ""; flex: 1; height: 1px; background: var(--border); }
-  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-  .card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    padding: 1.4rem; transition: transform .2s, border-color .2s;
+  .social a:hover {
+    border-color: #e08a72; background: rgba(224,110,84,.15);
+    transform: translateY(-3px);
   }
-  .card:hover { transform: translateY(-3px); border-color: rgba(110,168,254,.45); }
-  .card h3 { font-size: 1rem; margin-bottom: .5rem; }
-  .card p { color: var(--muted); font-size: .9rem; line-height: 1.55; }
-  footer {
-    border-top: 1px solid var(--border); margin-top: 2rem;
-    padding: 2rem clamp(1.2rem, 5vw, 4rem);
-    display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
-    color: var(--muted); font-size: .85rem;
-  }
-  footer a { color: var(--muted); text-decoration: none; }
-  footer a:hover { color: var(--fg); }
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  .social svg { width: 17px; height: 17px; fill: currentColor; }
 </style>
 </head>
 <body>
-<div class="glow"></div>
-<nav>
-  <div class="logo">andrea<span>.taddei</span></div>
-  <ul>
-    <li><a href="#chi-sono">Chi sono</a></li>
-    <li><a href="#progetti">Progetti</a></li>
-    <li><a href="https://github.com/andreataddei" target="_blank" rel="noopener">GitHub</a></li>
-  </ul>
-</nav>
-<main>
-  <header class="hero">
-    <div class="kicker">Benvenuto · Welcome</div>
-    <h1>Ciao, sono<br />Andrea Taddei.</h1>
-    <p class="sub">
-      Questa è la mia pagina personale: i miei progetti, le mie idee e
-      tutto ciò che costruisco, in un unico posto.
-    </p>
-    <div class="cta">
-      <a class="btn primary" href="#progetti">Scopri i progetti</a>
-      <a class="btn ghost" href="https://github.com/andreataddei" target="_blank" rel="noopener">Seguimi su GitHub</a>
-    </div>
-  </header>
-  <section id="chi-sono">
-    <h2>Chi sono</h2>
-    <div class="grid">
-      <div class="card"><h3>🛠️ Maker</h3><p>Mi piace trasformare idee in cose concrete: siti, tool, esperimenti.</p></div>
-      <div class="card"><h3>💡 Curioso</h3><p>Tecnologia, design e tutto ciò che sta in mezzo.</p></div>
-      <div class="card"><h3>🌍 Italiano</h3><p>Based in Italia, ma online non ci sono confini.</p></div>
-    </div>
-  </section>
-  <section id="progetti">
-    <h2>Progetti</h2>
-    <div class="grid">
-      <div class="card"><h3>📁 I miei repository</h3><p>Tutto il codice che pubblico è su GitHub: dai un'occhiata e sentiti libero di contribuire.</p></div>
-      <div class="card"><h3>🚀 Questo sito</h3><p>Costruito a mano in HTML e CSS, ospitato gratuitamente su GitHub Pages.</p></div>
-      <div class="card"><h3>✨ Prossimamente</h3><p>Nuovi progetti in arrivo: torna a trovarmi.</p></div>
-    </div>
-  </section>
-</main>
-<footer>
-  <div>© <span id="year"></span> Andrea Taddei</div>
-  <div><a href="https://github.com/andreataddei/andreataddei.github.io" target="_blank" rel="noopener">Codice sorgente di questa pagina</a></div>
-</footer>
-<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+<canvas id="scene"></canvas>
+
+<div class="overlay">
+  <h1>Andrea Taddei</h1>
+  <p>Creative Technologist</p>
+</div>
+
+<div class="social">
+  <a href="https://vimeo.com/andreataddei" target="_blank" rel="noopener" aria-label="Vimeo">
+    <svg viewBox="0 0 24 24"><path d="M23.977 6.416c-.105 2.338-1.739 5.543-4.896 9.603-3.267 4.24-6.026 6.36-8.29 6.36-1.41 0-2.592-1.296-3.565-3.892l-1.946-7.148c-.72-2.592-1.494-3.888-2.323-3.888-.18 0-.81.378-1.89 1.132L0 6.946c1.197-1.05 2.376-2.1 3.537-3.15C5.12 2.336 6.302 1.69 7.11 1.614c1.874-.18 3.027 1.105 3.463 3.855.468 2.952.79 4.79.966 5.512.53 2.42 1.114 3.63 1.75 3.63.494 0 1.236-.78 2.227-2.34.99-1.56 1.52-2.747 1.575-3.565.105-1.35-.39-2.025-1.485-2.025-.527 0-1.073.12-1.634.36 1.086-3.55 3.16-5.275 6.26-5.185 2.282.062 3.357 1.555 3.226 4.47z"/></svg>
+  </a>
+  <a href="https://x.com/taddeiandrea" target="_blank" rel="noopener" aria-label="X / Twitter">
+    <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.875l-5.35-6.98-6.117 6.98H2.18l7.73-8.84L1.7 2.25h7.05l4.846 6.44 5.65-6.44zm-1.16 17.52h1.833L7.084 4.126H5.117l11.967 15.64z"/></svg>
+  </a>
+  <a href="https://www.linkedin.com/in/taddeiandrea" target="_blank" rel="noopener" aria-label="LinkedIn">
+    <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+  </a>
+</div>
+
+<script>
+(function () {
+  // ============================================================
+  // Metaballs — grid approximation + marching squares
+  // Tutto in vanilla canvas: nessuna dipendenza esterna.
+  // ============================================================
+  var canvas = document.getElementById("scene");
+  var ctx = canvas.getContext("2d");
+
+  var CELL = 26;
+  var ISO  = 1.0;
+  var cols = 0, rows = 0, grid = [];
+
+  var PAL = [
+    [224, 138, 114],
+    [196, 106, 86],
+    [168, 84, 68],
+    [220, 176, 166],
+    [140, 64, 52],
+    [232, 168, 150],
+    [186, 120, 104]
+  ];
+
+  function softColor(t) {
+    var cyc = t * 0.06;
+    var i = Math.floor(cyc) % PAL.length;
+    var f = cyc - Math.floor(cyc);
+    var s = f * f * (3 - 2 * f);
+    var j = (i + 1) % PAL.length;
+    var mix = [];
+    for (var k = 0; k < 3; k++) mix.push(PAL[i][k] * (1 - s) + PAL[j][k] * s);
+    return mix;
+  }
+
+  var balls = [];
+  var N = 6;
+  for (var b = 0; b < N; b++) {
+    balls.push({
+      ax: 40 + Math.random() * 60,
+      ay: 30 + Math.random() * 45,
+      sx: 0.12 + Math.random() * 0.12,
+      sy: 0.14 + Math.random() * 0.12,
+      p: Math.random() * Math.PI * 2,
+      r: 55 + Math.random() * 45
+    });
+  }
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    cols = Math.ceil(canvas.width / CELL) + 1;
+    rows = Math.ceil(canvas.height / CELL) + 1;
+    grid = new Array(cols * rows);
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  function field(x, y, t) {
+    var v = 0, cx, cy;
+    for (var i = 0; i < balls.length; i++) {
+      var B = balls[i];
+      cx = canvas.width / 2 + Math.sin(t * B.sx + B.p) * (canvas.width / 4.2 + B.ax);
+      cy = canvas.height / 2 + Math.cos(t * B.sy + B.p * 1.7) * (canvas.height / 3.4 + B.ay);
+      var rr = B.r * (1 + 0.18 * Math.sin(t * 0.5 + B.p));
+      var dx = x - cx, dy = y - cy;
+      var d2 = dx * dx + dy * dy;
+      if (d2 < 1) d2 = 1;
+      v += (rr * rr) / d2;
+    }
+    return v;
+  }
+
+  function lerp(a, b, f) { return a + (b - a) * f; }
+
+  function draw() {
+    var t = performance.now() * 0.001;
+
+    ctx.fillStyle = "#0a0808";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    var col = softColor(t);
+    var strokeCol = "rgba(" + Math.round(col[0]) + "," + Math.round(col[1]) + "," + Math.round(col[2]) + ",0.9)";
+
+    ctx.globalCompositeOperation = "lighter";
+    for (var i = 0; i < balls.length; i++) {
+      var B = balls[i];
+      var cx = canvas.width / 2 + Math.sin(t * B.sx + B.p) * (canvas.width / 4.2 + B.ax);
+      var cy = canvas.height / 2 + Math.cos(t * B.sy + B.p * 1.7) * (canvas.height / 3.4 + B.ay);
+      var rr = B.r * (1 + 0.18 * Math.sin(t * 0.5 + B.p));
+      var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rr * 1.4);
+      g.addColorStop(0, "rgba(" + Math.round(col[0]) + "," + Math.round(col[1]) + "," + Math.round(col[2]) + ",0.14)");
+      g.addColorStop(1, "rgba(" + Math.round(col[0]) + "," + Math.round(col[1]) + "," + Math.round(col[2]) + ",0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(cx, cy, rr * 1.4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+
+    ctx.fillStyle = "rgba(220,176,166,0.10)";
+    for (var gy = 0; gy < rows; gy++) {
+      for (var gx = 0; gx < cols; gx++) {
+        ctx.fillRect(gx * CELL - 1, gy * CELL - 1, 2, 2);
+      }
+    }
+
+    for (var yy = 0; yy < rows; yy++) {
+      for (var xx = 0; xx < cols; xx++) {
+        grid[yy * cols + xx] = field(xx * CELL, yy * CELL, t);
+      }
+    }
+
+    ctx.strokeStyle = strokeCol;
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = "round";
+
+    for (var y = 0; y < rows - 1; y++) {
+      for (var x = 0; x < cols - 1; x++) {
+        var x0 = x * CELL, y0 = y * CELL;
+        var x1 = x0 + CELL, y1 = y0 + CELL;
+        var tl = grid[y * cols + x];
+        var tr = grid[y * cols + x + 1];
+        var bl = grid[(y + 1) * cols + x];
+        var br = grid[(y + 1) * cols + x + 1];
+
+        function frac(a, b) {
+          var den = b - a;
+          if (Math.abs(den) < 1e-9) return 0.5;
+          var f = (ISO - a) / den;
+          if (f < 0) f = 0; if (f > 1) f = 1;
+          return f;
+        }
+
+        var caseIndex = 0;
+        if (tl > ISO) caseIndex |= 8;
+        if (tr > ISO) caseIndex |= 4;
+        if (br > ISO) caseIndex |= 2;
+        if (bl > ISO) caseIndex |= 1;
+        if (caseIndex === 0 || caseIndex === 15) continue;
+
+        var top    = { x: lerp(x0, x1, frac(tl, tr)), y: y0 };
+        var right  = { x: x1, y: lerp(y0, y1, frac(tr, br)) };
+        var bottom = { x: lerp(x0, x1, frac(bl, br)), y: y1 };
+        var left   = { x: x0, y: lerp(y0, y1, frac(tl, bl)) };
+
+        ctx.beginPath();
+        switch (caseIndex) {
+          case 1:  case 14: ctx.moveTo(left.x, left.y); ctx.lineTo(bottom.x, bottom.y); break;
+          case 2:  case 13: ctx.moveTo(bottom.x, bottom.y); ctx.lineTo(right.x, right.y); break;
+          case 3:  case 12: ctx.moveTo(left.x, left.y); ctx.lineTo(right.x, right.y); break;
+          case 4:  case 11: ctx.moveTo(top.x, top.y); ctx.lineTo(right.x, right.y); break;
+          case 5:
+            ctx.moveTo(left.x, left.y); ctx.lineTo(top.x, top.y);
+            ctx.stroke(); ctx.beginPath();
+            ctx.moveTo(right.x, right.y); ctx.lineTo(bottom.x, bottom.y);
+            break;
+          case 6:  case 9:  ctx.moveTo(top.x, top.y); ctx.lineTo(bottom.x, bottom.y); break;
+          case 7:  case 8:  ctx.moveTo(left.x, left.y); ctx.lineTo(top.x, top.y); break;
+          case 10:
+            ctx.moveTo(left.x, left.y); ctx.lineTo(bottom.x, bottom.y);
+            ctx.stroke(); ctx.beginPath();
+            ctx.moveTo(top.x, top.y); ctx.lineTo(right.x, right.y);
+            break;
+        }
+        ctx.stroke();
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
 </body>
 </html>
