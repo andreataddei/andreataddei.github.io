@@ -46,9 +46,9 @@
     transition: padding-left .3s;
   }
   .channel:hover { padding-left: .7rem; }
-  .channel .label { font-family: var(--mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); }
-  .channel .value { font-size: .95rem; }
-  .channel .arrow { color: var(--accent); font-family: var(--mono); }
+  .channel .label { font-family: var(--mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); flex: 0 0 8.5rem; }
+  .channel .value { font-size: .95rem; flex: 1; text-align: left; }
+  .channel .arrow { color: var(--accent); font-family: var(--mono); flex: 0 0 auto; }
 
   .info-card { border: 1px solid var(--line); padding: 2rem; align-self: start; }
   .info-card h2 { font-family: var(--mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .2em; color: var(--accent); margin-bottom: 1.4rem; }
@@ -82,6 +82,8 @@
   @media (max-width: 760px) {
     nav ul { gap: 1.1rem; }
     .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .channel { flex-wrap: wrap; row-gap: .3rem; }
+    .channel .label { flex: 1 1 100%; }
   }
 </style>
 </head>
