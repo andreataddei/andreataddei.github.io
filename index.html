@@ -487,32 +487,72 @@
     }
   }
 
-  // orbita circolare reale: inclinazione i in radianti (piano orbitale inclinato)
-  function orbitPoint(u, r, inc) {
-    var si = Math.sin(inc), ci = Math.cos(inc);
-    return proj(Math.cos(u) * r, Math.sin(u) * r * si, Math.sin(u) * r * ci);
+  // ---------- satelliti reali: TLE CelesTrak, propagazione orbitale ----------
+  var TLES = [{"name": "AQUA", "line1": "1 27424U 02022A   26304.44711259  .00000453  00000+0  99793-4 0  9995", "line2": "2 27424  98.4473 276.5875 0000846  98.4282  15.1370 14.62257376303182"}, {"name": "GPM-CORE", "line1": "1 39574U 14009C   26304.34481929  .00007813  00000+0  17213-3 0  9992", "line2": "2 39574  64.9702 211.8783 0011900 253.7180 106.2651 15.44572494718849"}, {"name": "ICESAT-2", "line1": "1 43613U 18070A   26304.41680142  .00001680  00000+0  60859-4 0  9990", "line2": "2 43613  91.9951 327.7192 0002067  20.7418 339.3915 15.28277209453267"}, {"name": "ISS (ZARYA)", "line1": "1 25544U 98067A   26304.43448470  .00006246  00000+0  12087-3 0  9997", "line2": "2 25544  51.6334 345.8717 0007023 331.3934  28.6669 15.49127356592878"}, {"name": "LANDSAT 8", "line1": "1 39084U 13008A   26304.47172490  .00000173  00000+0  48567-4 0  9999", "line2": "2 39084  98.2163  12.8814 0001312  91.1446 268.9903 14.57102376717740"}, {"name": "LANDSAT 9", "line1": "1 49260U 21088A   26304.16268909  .00000110  00000+0  34427-4 0  9991", "line2": "2 49260  98.2142  12.5887 0001228  84.2145 275.9194 14.57102536270805"}, {"name": "NOAA 20 (JPSS-1)", "line1": "1 43013U 17073A   26304.46190109  .00000036  00000+0  38107-4 0  9995", "line2": "2 43013  98.7901 242.7730 0000602 138.1059 222.0163 14.19533986463803"}, {"name": "SENTINEL-1A", "line1": "1 39634U 14016A   26304.51678118  .00000053  00000+0  20688-4 0  9994", "line2": "2 39634  98.1590 309.8963 0001398  81.8762 278.2597 14.59844684669903"}, {"name": "SENTINEL-2A", "line1": "1 40697U 15028A   26304.50828042  .00000182  00000+0  86106-4 0  9991", "line2": "2 40697  98.5621  17.3630 0001149  96.0971 264.0343 14.30818028593224"}, {"name": "SENTINEL-2B", "line1": "1 42063U 17013A   26304.50122483  .00000144  00000+0  71616-4 0  9990", "line2": "2 42063  98.5727  17.3265 0001136  91.9524 268.1789 14.30817359504135"}, {"name": "SENTINEL-2C", "line1": "1 60989U 24157A   26304.18649935  .00000058  00000+0  38944-4 0  9995", "line2": "2 60989  98.5675  17.0130 0000875  94.1969 265.9314 14.30823723112438"}, {"name": "SENTINEL-3A", "line1": "1 41335U 16011A   26304.47885458  .00000052  00000+0  39422-4 0  9999", "line2": "2 41335  98.6313   9.8869 0001284  92.0228 268.1099 14.26732807557491"}, {"name": "SENTINEL-3B", "line1": "1 43437U 18039A   26304.17145964  .00000042  00000+0  35363-4 0  9993", "line2": "2 43437  98.6317   9.7325 0000569 106.0908 254.0335 14.26732188443518"}, {"name": "SENTINEL-6A", "line1": "1 46984U 20086A   26304.09376358 -.00000039  00000+0  93674-4 0  9998", "line2": "2 46984  66.0411 212.7682 0007766 269.7540  90.2586 12.80930285277732"}, {"name": "SUOMI NPP", "line1": "1 37849U 11061A   26304.51846125  .00000065  00000+0  52043-4 0  9995", "line2": "2 37849  98.8091 244.5288 0000975 329.0173  31.0945 14.19542104777786"}, {"name": "TERRA", "line1": "1 25994U 99068A   26304.51279618  .00000187  00000+0  46991-4 0  9993", "line2": "2 25994  97.9288 348.5397 0003068 136.2002 358.3368 14.61186597429519"}, {"name": "STARLINK-1008", "line1": "1 44714U 19074B   26304.58335647 -.00056648  00000+0 -48955-3 0  9991", "line2": "2 44714  53.1435 125.3256 0001642 173.8964 111.9764 15.68513414  5864"}, {"name": "STARLINK-30219", "line1": "1 57507U 23113N   26304.41668980  .00042080  00000+0  15309-2 0  9994", "line2": "2 57507  43.0037 121.6865 0001613 258.5556  63.1297 15.27559520  5924"}, {"name": "STARLINK-31679", "line1": "1 59519U 24073J   26304.33335647  .00023590  00000+0  86400-3 0  9993", "line2": "2 59519  43.0046  56.6535 0002039 273.3227 187.0222 15.27581190  5868"}, {"name": "STARLINK-3350", "line1": "1 51105U 22005B   26304.30269118  .00000152  00000+0  15650-4 0  9994", "line2": "2 51105  53.1587 294.7938 0001331  87.3374 272.7781 15.34385754264679"}, {"name": "STARLINK-34846", "line1": "1 66972U 25288P   26304.24014685  .00009992  00000+0  37214-3 0  9998", "line2": "2 66972  43.0022 133.0296 0001355 263.4818  96.5879 15.27580289 51314"}, {"name": "STARLINK-3611", "line1": "1 51779U 22017M   26304.33298052 -.00003477  00000+0 -91743-4 0  9998", "line2": "2 51779  53.1616 340.6929 0002135  78.8353 281.2890 15.34415928258424"}, {"name": "STARLINK-37365", "line1": "1 69186U 26114E   26304.16670139 -.00018991  00000+0 -55224-3 0  9992", "line2": "2 69186  53.1590 283.8739 0001473  91.0998 356.7164 15.34405166  5873"}, {"name": "STARLINK-4648", "line1": "1 53602U 22104Q   26304.13627730 -.00001871  00000+0 -44238-4 0  9992", "line2": "2 53602  53.1587 243.4379 0001350  85.6943 274.4214 15.34405464231481"}];
+  var TS = 240;                                  // time-lapse: 1 s reale = 240 s simulati
+  var MU = 398600.4418, RE_KM = 6371.0, EARTH_W = Math.PI * 2 / 86164;  // rotazione siderale
+  var E0 = Date.now() / 1000;
+
+  function parseTLE(s) {
+    var l1 = s.line1, l2 = s.line2;
+    var yy = parseInt(l1.substring(18, 20), 10);
+    var yr = yy < 57 ? 2000 + yy : 1900 + yy;
+    var doy = parseFloat(l1.substring(20, 32));
+    var epoch = Date.UTC(yr, 0, 1) / 1000 + doy * 86400;
+    return {
+      name: s.name,
+      incl: parseFloat(l2.substring(8, 16)) * Math.PI / 180,
+      raan: parseFloat(l2.substring(17, 32)) * Math.PI / 180,
+      argp: parseFloat(l2.substring(34, 42)) * Math.PI / 180,
+      m0:   parseFloat(l2.substring(43, 51)) * Math.PI / 180,
+      n:    parseFloat(l2.substring(52, 63)) * Math.PI * 2 / 86400,
+      tau0: (E0 - epoch) * TS
+    };
+  }
+  var SATS = [];
+  for (var ti = 0; ti < TLES.length; ti++) {
+    var ps = parseTLE(TLES[ti]);
+    var aKm = Math.pow(MU / (ps.n * ps.n), 1 / 3);
+    ps.rr = aKm / RE_KM;
+    SATS.push(ps);
+  }
+  function simTau() { return (Date.now() / 1000 - E0) * TS; }
+  function satU(s, tau) { return s.argp + s.m0 + s.n * (s.tau0 + tau); }
+
+  // ECI -> schermo: x destra, nord in alto, profondita' positiva = dietro la sfera
+  function satPosU(s, u) {
+    var cu = Math.cos(u), su = Math.sin(u);
+    var cO = Math.cos(s.raan), sO = Math.sin(s.raan);
+    var ci = Math.cos(s.incl), si = Math.sin(s.incl);
+    var r = s.rr * R;
+    return proj((cO * cu - sO * su * ci) * r, -(su * si) * r, (sO * cu + cO * su * ci) * r);
   }
 
-  // breve scia comet su entrambi i lati del satellite (solo un po' di scia)
-  function drawTrail(su, r, inc, maxAlpha, span, N) {
+  // ruota la griglia insieme alla Terra (asse nord-sud)
+  function rotG(p) {
+    var c = Math.cos(ROT), s = Math.sin(ROT);
+    return [p[0] * c + p[2] * s, p[1], p[2] * c - p[0] * s];
+  }
+
+  function isStarlink(s) { return s.name.indexOf("STARLINK") === 0; }
+
+  function drawSat(s, tau) {
+    var u = satU(s, tau);
+    var span = 0.5, N = 26, maxA = 0.5;
+    if (isStarlink(s)) { span = 0.30; N = 12; maxA = 0.30; }
     var prev = null;
     for (var k = -N; k <= N; k++) {
-      var u2 = su + k * span / N;
-      var p2 = orbitPoint(u2, r, inc);
-      var alpha = maxAlpha * (1 - Math.abs(k) / (N + 1));
-      if (behindGlobe(p2)) { prev = null; continue; }
+      var p = satPosU(s, u + k * span / N);
+      if (behindGlobe(p)) { prev = null; continue; }
       if (prev) {
-        x.strokeStyle = "rgba(111,140,255," + alpha.toFixed(4) + ")";
-        x.beginPath(); x.moveTo(prev.x, prev.y); x.lineTo(p2.x, p2.y); x.stroke();
+        x.strokeStyle = "rgba(111,140,255," + (maxA * (1 - Math.abs(k) / (N + 1))).toFixed(4) + ")";
+        x.beginPath(); x.moveTo(prev.x, prev.y); x.lineTo(p.x, p.y); x.stroke();
       }
-      prev = p2;
+      prev = p;
     }
-  }
-
-  function drawSatellite(su, r, inc, kind) {
-    var sat = orbitPoint(su, r, inc);
+    var sat = satPosU(s, u);
     if (behindGlobe(sat)) return;
-    if (kind === "iss") {
+    if (s.name === "ISS (ZARYA)") {
       x.strokeStyle = "rgba(159,180,255,0.9)";
       x.lineWidth = 1.4;
       x.beginPath(); x.moveTo(sat.x - 6, sat.y); x.lineTo(sat.x - 2.5, sat.y);
@@ -522,34 +562,26 @@
       x.fillStyle = "rgba(159,180,255,0.55)";
       x.font = "9px monospace";
       x.fillText("ISS", sat.x + 9, sat.y + 3);
-    } else if (kind === "sentinel") {
+    } else if (s.name === "SENTINEL-2A") {
       x.fillStyle = "#f4f4f2";
       x.beginPath(); x.arc(sat.x, sat.y, 2.4, 0, Math.PI * 2); x.fill();
       x.strokeStyle = "rgba(111,140,255,0.6)";
       x.beginPath(); x.arc(sat.x, sat.y, 6.5, 0, Math.PI * 2); x.stroke();
       x.fillStyle = "rgba(159,180,255,0.55)";
       x.font = "9px monospace";
-      x.fillText("SENTINEL-2", sat.x + 10, sat.y + 3);
-    } else if (kind === "starlink") {
+      x.fillText("SENTINEL-2A", sat.x + 10, sat.y + 3);
+    } else if (isStarlink(s)) {
       x.fillStyle = "rgba(244,244,242,0.85)";
       x.beginPath(); x.arc(sat.x, sat.y, 1.4, 0, Math.PI * 2); x.fill();
     } else {
       x.fillStyle = "#f4f4f2";
-      x.beginPath(); x.arc(sat.x, sat.y, 2.6, 0, Math.PI * 2); x.fill();
-      x.strokeStyle = "rgba(111,140,255,0.6)";
-      x.beginPath(); x.arc(sat.x, sat.y, 7, 0, Math.PI * 2); x.stroke();
+      x.beginPath(); x.arc(sat.x, sat.y, 2.2, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = "rgba(111,140,255,0.45)";
+      x.beginPath(); x.arc(sat.x, sat.y, 5.5, 0, Math.PI * 2); x.stroke();
     }
   }
-
-  // costanti orbitali reali (inclinazioni vere, raggi in unita' Terra leggermente esagerati)
-  var INC_ISS = 51.6 * Math.PI / 180;        // ISS
-  var INC_SL  = 53.0 * Math.PI / 180;        // Starlink
-  var INC_S2  = 98.6 * Math.PI / 180;        // Sentinel-2 (eliosincrona)
-  var R_ISS = 1.10, R_SL = 1.13, R_S2 = 1.24;
-  var SLN = 7;                                // satelliti nel treno Starlink
-
   function draw() {
-    ROT += 0.0016;
+    ROT = EARTH_W * simTau();
     x.clearRect(0, 0, W, H);
     var now = performance.now();
     var drift = (now * 0.004) % W;
@@ -570,31 +602,18 @@
     for (var m = 0; m < 12; m++) {
       var am = m / 12 * Math.PI;
       gridCircle(function (t2) {
-        return [Math.sin(t2) * R * Math.cos(am), Math.cos(t2) * R, Math.sin(t2) * R * Math.sin(am)];
+        return rotG([Math.sin(t2) * R * Math.cos(am), Math.cos(t2) * R, Math.sin(t2) * R * Math.sin(am)]);
       }, 128);
     }
     for (var pa2 = 1; pa2 < 8; pa2++) {
       var phi = (pa2 / 8 - 0.5) * Math.PI;
       var r2 = R * Math.cos(phi), py = R * Math.sin(phi);
-      gridCircle(function (t2) { return [Math.sin(t2) * r2, py, Math.cos(t2) * r2]; }, 128);
+      gridCircle(function (t2) { return rotG([Math.sin(t2) * r2, py, Math.cos(t2) * r2]); }, 128);
     }
 
-    // ---- scie e satelliti (niente anelli: solo un po' di scia) ----
-    var suISS = now * 0.00080;                 // ISS: orbita in ~92 min (qui accelerata)
-    var suSL  = now * 0.00045;                 // Starlink
-    var suS2  = now * 0.00018;                 // Sentinel-2
-
-    drawTrail(suS2, R * R_S2, INC_S2, 0.55, 0.5, 28);
-    drawSatellite(suS2, R * R_S2, INC_S2, "sentinel");
-
-    drawTrail(suISS, R * R_ISS, INC_ISS, 0.45, 0.45, 24);
-    drawSatellite(suISS, R * R_ISS, INC_ISS, "iss");
-
-    for (var k2 = 0; k2 < SLN; k2++) {
-      var su = suSL + k2 * (Math.PI * 2 / SLN);
-      drawTrail(su, R * R_SL, INC_SL, 0.28, 0.22, 10);
-      drawSatellite(su, R * R_SL, INC_SL, "starlink");
-    }
+    // ---- satelliti reali dai TLE: velocita' e rotazione terrestre coerenti ----
+    var tau = simTau();
+    for (var si = 0; si < SATS.length; si++) drawSat(SATS[si], tau);
 
     requestAnimationFrame(draw);
   }
