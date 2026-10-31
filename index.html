@@ -267,13 +267,18 @@
 (function () {
   var c = document.getElementById("orbit");
   var x = c.getContext("2d");
-  var W, H, CX, CY, R;
+  var W, H, CX, CY, R, DPR = 1;
   var sphereC = document.createElement("canvas");
   var sphereX = sphereC.getContext("2d");
   var sphereImg = null, pixLon = null, pixV = null, pixShade = null, pixIdx = null, pixCount = 0;
+  var frame = 0;
+
   function resize() {
-    W = c.width = window.innerWidth;
-    H = c.height = window.innerHeight;
+    DPR = Math.min(2, window.devicePixelRatio || 1);
+    W = window.innerWidth; H = window.innerHeight;
+    c.width = Math.round(W * DPR); c.height = Math.round(H * DPR);
+    c.style.width = W + "px"; c.style.height = H + "px";
+    x.setTransform(DPR, 0, 0, DPR, 0, 0);
     CX = W * 0.78; CY = H * 0.42;
     R = Math.min(W, H) * 0.30;
     rebuildSphere();
@@ -282,7 +287,6 @@
 
   var ROT = 0;
 
-  // proiezione ortografica (combacia col disco testurizzato)
   function proj(px, py, pz) {
     return { x: CX + px, y: CY + py, z: pz };
   }
@@ -293,30 +297,44 @@
     return dx * dx + dy * dy < R * R;
   }
 
-  // ---------- texture della Terra (repo via base64, fallback CDN NASA) ----------
-  var TW = 1024, TH = 512;
+  // ---------- texture della Terra (repo base64, fallback CDN NASA) ----------
+  var TW = 1024, TH = 512, TWm = TW - 1, THm = TH - 1;
   var tex = { ready: false, data: null, lum: null };
   var img = new Image();
   var triedCDN = false;
 
-  img.onload = function () {
+  function buildTexture() {
     try {
       var tc = document.createElement("canvas");
       tc.width = TW; tc.height = TH;
       var tctx = tc.getContext("2d");
       tctx.drawImage(img, 0, 0, TW, TH);
       var d = tctx.getImageData(0, 0, TW, TH).data;
-      tex.data = d;
       var lum = new Uint8Array(TW * TH);
       for (var i = 0, p = 0; i < lum.length; i++, p += 4) {
         lum[i] = (d[p] * 77 + d[p + 1] * 151 + d[p + 2] * 28) >> 8;
       }
-      tex.lum = lum;
+      // luminanza sfocata (box blur 3x3): i rilievi risultano morbidi, niente sfarfallio
+      var blur = new Uint8Array(TW * TH);
+      for (var y = 0; y < TH; y++) {
+        var yu = y > 0 ? y - 1 : 0, yd = y < THm ? y + 1 : THm;
+        for (var xx = 0; xx < TW; xx++) {
+          var xl = xx > 0 ? xx - 1 : 0, xr = xx < TWm ? xx + 1 : TWm;
+          blur[y * TW + xx] = (
+            lum[yu * TW + xl] + lum[yu * TW + xx] + lum[yu * TW + xr] +
+            lum[y * TW + xl] + lum[y * TW + xx] + lum[y * TW + xr] +
+            lum[yd * TW + xl] + lum[yd * TW + xx] + lum[yd * TW + xr]) / 9;
+        }
+      }
+      tex.data = d; tex.lum = blur;
       tex.ready = true;
+      rebuildSphere();   // forza il rebuild quando la texture arriva
     } catch (e) { /* resta il fallback */ }
-  };
+  }
+
+  img.onload = buildTexture;
   img.onerror = function () {
-    if (!triedCDN) { triedCDN = true; loadFromCDN(); }
+    if (!triedCDN) { loadFromCDN(); }
   };
   img.crossOrigin = "anonymous";
 
@@ -334,7 +352,7 @@
   loadFromRepo();
 
   function rebuildSphere() {
-    var S = Math.max(64, Math.min(448, Math.round(R * 2)));
+    var S = Math.max(64, Math.min(768, Math.round(R * 2 * DPR)));
     sphereC.width = sphereC.height = S;
     sphereX = sphereC.getContext("2d");
     sphereImg = sphereX.createImageData(S, S);
@@ -349,8 +367,8 @@
         var z = Math.sqrt(rr - r2);
         lon[n] = Math.atan2(px, z);
         var lat = Math.asin(-py / (S / 2));
-        v[n] = Math.min(TH - 1, Math.max(0, Math.round((0.5 - lat / Math.PI) * TH)));
-        sh[n] = 0.42 + 0.58 * (z / (S / 2));
+        v[n] = Math.min(THm, Math.max(0, Math.round((0.5 - lat / Math.PI) * TH)));
+        sh[n] = 0.45 + 0.55 * (z / (S / 2));
         idx[n] = (yy * S + xx) * 4;
         n++;
       }
@@ -358,35 +376,38 @@
     pixLon = lon; pixV = v; pixShade = sh; pixIdx = idx; pixCount = n;
   }
 
-  var TWm = TW - 1;
+  var texDirty = true;
 
   function drawPlanet() {
     if (tex.ready && sphereImg) {
-      var d = sphereImg.data, td = tex.data, lum = tex.lum;
-      var TWO = Math.PI * 2, K = 1.9;
-      for (var i = 0; i < pixCount; i++) {
-        var lon = pixLon[i] + ROT;
-        var u = (lon / TWO) % 1; if (u < 0) u += 1;
-        var tu = (u * TW) | 0, tv = pixV[i];
-        var s4 = (tv * TW + tu) * 4;
-        // rilievo: gradiente di luminosita' nella texture = pendenza del terreno
-        var li = tv * TW + tu;
-        var ll = lum[li - (tu > 0 ? 1 : 0)];
-        var lr = lum[li + (tu < TWm ? 1 : 0)];
-        var lu2 = lum[li - (tv > 0 ? TW : 0)];
-        var ld = lum[li + (tv < TH - 1 ? TW : 0)];
-        var relief = (ll - lr) * K + (lu2 - ld) * K;
-        var shade = 1 + relief;
-        if (shade < 0.55) shade = 0.55; else if (shade > 1.55) shade = 1.55;
-        // oceano: niente bump (il mare e' piatto)
-        if (td[s4 + 2] - td[s4] > 16) shade = 1 + (shade - 1) * 0.15;
-        var sh2 = pixShade[i] * shade, o = pixIdx[i];
-        d[o]     = td[s4]     * sh2;
-        d[o + 1] = td[s4 + 1] * sh2;
-        d[o + 2] = td[s4 + 2] * sh2;
-        d[o + 3] = 255;
+      // aggiorna la sfera ogni 3 frame (rotazione lenta: impercettibile, niente flicker)
+      frame++;
+      if (texDirty || frame % 3 === 0) {
+        texDirty = false;
+        var d = sphereImg.data, td = tex.data, lum = tex.lum;
+        var TWO = Math.PI * 2, K = 1.2;
+        for (var i = 0; i < pixCount; i++) {
+          var lon = pixLon[i] + ROT;
+          var u = (lon / TWO) % 1; if (u < 0) u += 1;
+          var tu = (u * TW) | 0, tv = pixV[i];
+          var s4 = (tv * TW + tu) * 4;
+          var li = tv * TW + tu;
+          var ll = lum[li - (tu > 0 ? 1 : 0)];
+          var lr = lum[li + (tu < TWm ? 1 : 0)];
+          var lu2 = lum[li - (tv > 0 ? TW : 0)];
+          var ld = lum[li + (tv < THm ? TW : 0)];
+          var relief = (ll - lr) * K + (lu2 - ld) * K;
+          var shade = 1 + relief;
+          if (shade < 0.7) shade = 0.7; else if (shade > 1.4) shade = 1.4;
+          if (td[s4 + 2] - td[s4] > 16) shade = 1 + (shade - 1) * 0.15;
+          var sh2 = pixShade[i] * shade, o = pixIdx[i];
+          d[o]     = td[s4]     * sh2;
+          d[o + 1] = td[s4 + 1] * sh2;
+          d[o + 2] = td[s4 + 2] * sh2;
+          d[o + 3] = 255;
+        }
+        sphereX.putImageData(sphereImg, 0, 0);
       }
-      sphereX.putImageData(sphereImg, 0, 0);
       x.drawImage(sphereC, CX - R, CY - R, 2 * R, 2 * R);
     } else {
       var g = x.createRadialGradient(CX, CY - R * 0.3, R * 0.1, CX, CY, R);
@@ -397,7 +418,7 @@
     }
   }
 
-  // ---------- cielo: stelle diffuse + costellazioni reali, deriva lenta ----------
+  // ---------- cielo: stelle + costellazioni reali, deriva lenta ----------
   var CONSTELLATIONS = [
     { label: "URSA MAIOR", lx: 0.30, ly: 0.10,
       stars: [[0.30,0.155],[0.255,0.185],[0.24,0.235],[0.29,0.245],[0.33,0.245],[0.375,0.23],[0.42,0.21]],
@@ -470,30 +491,24 @@
     }
   }
 
-  // punto su un'orbita inclinata: tilt = tan(inclinazione)
   function orbitPoint(u, r, tilt) {
     return proj(Math.sin(u) * r, Math.cos(u) * r * tilt, Math.cos(u) * r);
   }
 
-  function drawRing(r, tilt, alpha, occludedAlpha) {
+  function drawRing(r, tilt, alpha) {
     x.strokeStyle = "rgba(111,140,255," + alpha + ")";
     x.beginPath();
     var pen = false;
     for (var u = 0; u <= 128; u++) {
       var pr = orbitPoint(u / 128 * Math.PI * 2, r, tilt);
-      if (behindGlobe(pr)) {
-        if (occludedAlpha > 0 && pen) {
-          // spezza ma continua: la parte dietro la sfera non si vede (mondo opaco)
-        }
-        pen = false;
-      } else {
+      if (behindGlobe(pr)) { pen = false; }
+      else {
         if (pen) x.lineTo(pr.x, pr.y); else { x.moveTo(pr.x, pr.y); pen = true; }
       }
     }
     x.stroke();
   }
 
-  // scia comet: tratto avanti e dietro al satellite, sempre visibile davanti
   function drawTrail(su, r, tilt, maxAlpha, span, N) {
     var prev = null;
     for (var k = -N; k <= N; k++) {
@@ -513,7 +528,6 @@
     var sat = orbitPoint(su, r, tilt);
     if (behindGlobe(sat)) return;
     if (isISS) {
-      // ISS: punto con pannelli solari
       x.strokeStyle = "rgba(159,180,255,0.9)";
       x.lineWidth = 1.4;
       x.beginPath(); x.moveTo(sat.x - 6, sat.y); x.lineTo(sat.x - 2.5, sat.y);
@@ -535,19 +549,17 @@
     ROT += 0.0016;
     x.clearRect(0, 0, W, H);
     var now = performance.now();
-    var drift = (now * 0.004) % W;   // deriva lenta del cielo (~4 px/s)
+    var drift = (now * 0.004) % W;
 
     drawSky(drift);
 
     x.lineWidth = 1;
 
-    // ---- traiettorie (anelli) ----
-    var TILT_LEO = Math.tan(51.6 * Math.PI / 180);   // ISS: inclinazione reale 51.6 gradi
-    drawRing(R * 1.45, 0.35, 0.35, 0);               // satellite principale
-    drawRing(R * 1.10, TILT_LEO, 0.13, 0);           // ISS (orbita bassa, molto inclinata)
-    drawRing(R * 1.30, -6.0, 0.08, 0);               // satellite polare (eliiosincrona)
+    var TILT_LEO = Math.tan(51.6 * Math.PI / 180);
+    drawRing(R * 1.45, 0.35, 0.35);
+    drawRing(R * 1.10, TILT_LEO, 0.13);
+    drawRing(R * 1.30, -6.0, 0.08);
 
-    // ---- glow atmosferico attorno al pianeta ----
     var glow = x.createRadialGradient(CX, CY, R * 0.82, CX, CY, R * 1.30);
     glow.addColorStop(0, "rgba(111,140,255,0.30)");
     glow.addColorStop(0.45, "rgba(111,140,255,0.10)");
@@ -555,10 +567,8 @@
     x.fillStyle = glow;
     x.beginPath(); x.arc(CX, CY, R * 1.30, 0, Math.PI * 2); x.fill();
 
-    // ---- pianeta: Terra reale con rilievi ----
     drawPlanet();
 
-    // ---- griglia sopra il pianeta ----
     for (var m = 0; m < 12; m++) {
       var am = m / 12 * Math.PI;
       gridCircle(function (t2) {
@@ -571,15 +581,13 @@
       gridCircle(function (t2) { return [Math.sin(t2) * r2, py, Math.cos(t2) * r2]; }, 128);
     }
 
-    // ---- scie comet (davanti E dietro al satellite: la parte sul davanti c'e' sempre) ----
     var su1 = now * 0.00035;
-    var suISS = now * 0.00080;   // la ISS orbita piu' veloce
+    var suISS = now * 0.00080;
     var suPolar = -now * 0.00022;
     drawTrail(su1, R * 1.45, 0.35, 0.55, 1.1, 55);
     drawTrail(suISS, R * 1.10, TILT_LEO, 0.45, 0.9, 45);
     drawTrail(suPolar, R * 1.30, -6.0, 0.30, 0.7, 35);
 
-    // ---- satelliti ----
     drawSatellite(su1, R * 1.45, 0.35, false);
     drawSatellite(suISS, R * 1.10, TILT_LEO, true);
     drawSatellite(suPolar, R * 1.30, -6.0, false);
@@ -588,6 +596,7 @@
   }
   draw();
 })();
+;
 ;
 ;
 
