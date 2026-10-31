@@ -287,6 +287,7 @@
   }
 
   function circle3D(latSteps, fn, visible) {
+    visible = visible || function () { return true; };
     // disegna solo i punti "visibili" (visible(pr) -> bool): il mondo e'
     // opaco, cioe' che sta dietro la sfera non si vede
     x.beginPath();
@@ -325,6 +326,22 @@
     x.lineWidth = 1;
     x.strokeStyle = "rgba(244,244,242,0.07)";
 
+    // orbita del satellite (inclinata)
+    var t = performance.now() * 0.00035;
+    x.strokeStyle = "rgba(111,140,255,0.35)";
+    circle3D(96, function (u) {
+      var ox = Math.sin(u) * R * 1.45, oz = Math.cos(u) * R * 1.45;
+      return [ox, oz * 0.35, oz]; // inclinazione: schiaccia la y con la z
+    });
+    x.stroke();
+
+    // disco opaco del pianeta: copre stelle e orbita che passano dietro
+    var g = x.createRadialGradient(CX, CY - R * 0.3, R * 0.1, CX, CY, R);
+    g.addColorStop(0, "rgba(20,27,48,0.98)");
+    g.addColorStop(1, "rgba(10,14,26,0.98)");
+    x.fillStyle = g;
+    x.beginPath(); x.arc(CX, CY, R, 0, Math.PI * 2); x.fill();
+
     // meridiani
     for (var m = 0; m < 12; m++) {
       var a = m / 12 * Math.PI;
@@ -341,21 +358,6 @@
       x.stroke();
     }
 
-    // orbita del satellite (inclinata)
-    var t = performance.now() * 0.00035;
-    x.strokeStyle = "rgba(111,140,255,0.35)";
-    circle3D(96, function (u) {
-      var ox = Math.sin(u) * R * 1.45, oz = Math.cos(u) * R * 1.45;
-      return [ox, oz * 0.35, oz]; // inclinazione: schiaccia la y con la z
-    });
-    x.stroke();
-
-    // disco opaco del pianeta: copre stelle e orbita che passano dietro
-    var g = x.createRadialGradient(CX, CY - R * 0.3, R * 0.1, CX, CY, R);
-    g.addColorStop(0, "rgba(20,27,48,0.98)");
-    g.addColorStop(1, "rgba(10,14,26,0.98)");
-    x.fillStyle = g;
-    x.beginPath(); x.arc(CX, CY, R, 0, Math.PI * 2); x.fill();
 
     // satellite + scia
     var su = t;
