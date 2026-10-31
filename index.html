@@ -298,7 +298,7 @@
   }
 
   // ---------- texture della Terra (repo base64, fallback CDN NASA) ----------
-  var TW = 1024, TH = 512, TWm = TW - 1, THm = TH - 1;
+  var TW = 2048, TH = 1024, TWm = TW - 1, THm = TH - 1;
   var tex = { ready: false, data: null, lum: null };
   var img = new Image();
   var triedCDN = false;
@@ -349,7 +349,7 @@
   loadFromRepo();
 
   function rebuildSphere() {
-    var S = Math.max(64, Math.min(768, Math.round(R * 2 * DPR)));
+    var S = Math.max(64, Math.min(1024, Math.round(R * 2 * DPR)));
     sphereC.width = sphereC.height = S;
     sphereX = sphereC.getContext("2d");
     sphereImg = sphereX.createImageData(S, S);
@@ -378,24 +378,26 @@
   function drawPlanet() {
     if (tex.ready && sphereImg) {
       frame++;
-      if (texDirty || frame % 3 === 0) {
+      if (texDirty || frame % 4 === 0) {
         texDirty = false;
         var d = sphereImg.data, td = tex.data, lum = tex.lum;
-        var TWO = Math.PI * 2, K = 1.2;
+        var TWO = Math.PI * 2, K = 2.0;
         for (var i = 0; i < pixCount; i++) {
           var lon = pixLon[i] + ROT;
           var u = (lon / TWO) % 1; if (u < 0) u += 1;
           var tu = (u * TW) | 0, tv = pixV[i];
           var s4 = (tv * TW + tu) * 4;
           var li = tv * TW + tu;
-          var ll = lum[li - (tu > 0 ? 1 : 0)];
-          var lr = lum[li + (tu < TWm ? 1 : 0)];
-          var lu2 = lum[li - (tv > 0 ? TW : 0)];
-          var ld = lum[li + (tv < THm ? TW : 0)];
+          var oE = tu > 1 ? 2 : (tu > 0 ? 1 : 0), oW = tu < TWm - 1 ? 2 : (tu < TWm ? 1 : 0);
+          var oN = tv > 1 ? 2 : (tv > 0 ? 1 : 0), oS = tv < THm - 1 ? 2 : (tv < THm ? 1 : 0);
+          var ll = lum[li - oE];
+          var lr = lum[li + oW];
+          var lu2 = lum[li - oN * TW];
+          var ld = lum[li + oS * TW];
           var relief = (ll - lr) * K + (lu2 - ld) * K;
           var shade = 1 + relief;
-          if (shade < 0.7) shade = 0.7; else if (shade > 1.4) shade = 1.4;
-          if (td[s4 + 2] - td[s4] > 16) shade = 1 + (shade - 1) * 0.15;
+          if (shade < 0.55) shade = 0.55; else if (shade > 1.7) shade = 1.7;
+          if (td[s4 + 2] - td[s4] > 16) shade = 1 + (shade - 1) * 0.22;
           var sh2 = pixShade[i] * shade, o = pixIdx[i];
           d[o]     = td[s4]     * sh2;
           d[o + 1] = td[s4 + 1] * sh2;
