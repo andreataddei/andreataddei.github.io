@@ -263,7 +263,7 @@
 </footer>
 
 <script>
-// ---------- orbital background: wireframe globe + satellite ----------
+// ---------- orbital background: Terra reale, costellazioni, satellite ----------
 (function () {
   var c = document.getElementById("orbit");
   var x = c.getContext("2d");
@@ -273,38 +273,156 @@
     H = c.height = window.innerHeight;
     CX = W * 0.78; CY = H * 0.42;
     R = Math.min(W, H) * 0.30;
+    rebuildSphere();
   }
+  var sphereC = document.createElement("canvas");
+  var sphereX = sphereC.getContext("2d");
+  var sphereImg = null, pixLon = null, pixV = null, pixShade = null, pixIdx = null, pixCount = 0, pixS = 0;
   window.addEventListener("resize", resize); resize();
 
   var ROT = 0;
 
+  // proiezione ortografica (senza prospettica: combacia col disco testurizzato)
   function proj(px, py, pz) {
-    var rx = px * Math.cos(ROT) - pz * Math.sin(ROT);
-    var rz = px * Math.sin(ROT) + pz * Math.cos(ROT);
-    var s = 1 / (1 + rz / (R * 6));
-    return { x: CX + rx * s, y: CY + py * s, z: rz };
+    return { x: CX + px, y: CY + py, z: pz };
   }
 
-  // un punto e' nascosto se sta dietro la sfera e ricade dentro il disco
   function behindGlobe(pr) {
     if (pr.z <= 0) return false;
     var dx = pr.x - CX, dy = pr.y - CY;
     return dx * dx + dy * dy < R * R;
   }
 
+  // ---------- texture della Terra (Blue Marble NASA, mappata sulla sfera) ----------
+  var tex = { ready: false, w: 0, h: 0, data: null };
+  var img = new Image();
+  img.onload = function () {
+    try {
+      var tc = document.createElement("canvas");
+      tc.width = 1024; tc.height = 512;
+      var tctx = tc.getContext("2d");
+      tctx.drawImage(img, 0, 0, 1024, 512);
+      tex.data = tctx.getImageData(0, 0, 1024, 512).data;
+      tex.w = 1024; tex.h = 512;
+      tex.ready = true;
+    } catch (e) { /* fallback: disco sfumato */ }
+  };
+  img.crossOrigin = "anonymous";   // CDN con CORS: il canvas resta leggibile
+  img.src = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_atmos_2048.jpg";
+
+
+  function rebuildSphere() {
+    var S = Math.max(64, Math.min(1024, Math.round(R * 2)));
+    sphereC.width = sphereC.height = S;
+    sphereX = sphereC.getContext("2d");
+    sphereImg = sphereX.createImageData(S, S);
+    var lon = new Float32Array(S * S), v = new Uint16Array(S * S),
+        sh = new Float32Array(S * S), idx = new Uint32Array(S * S);
+    var n = 0, rr = (S / 2) * (S / 2);
+    for (var yy = 0; yy < S; yy++) {
+      for (var xx = 0; xx < S; xx++) {
+        var px = xx + 0.5 - S / 2, py = yy + 0.5 - S / 2;
+        var r2 = px * px + py * py;
+        if (r2 > rr) continue;
+        var z = Math.sqrt(rr - r2);
+        lon[n] = Math.atan2(px, z);                    // longitudine di partenza
+        var lat = Math.asin(-py / (S / 2));           // latitudine
+        v[n] = Math.min(511, Math.max(0, Math.round((0.5 - lat / Math.PI) * 512)));
+        sh[n] = 0.42 + 0.58 * (z / (S / 2));           // limb darkening
+        idx[n] = (yy * S + xx) * 4;
+        n++;
+      }
+    }
+    pixLon = lon; pixV = v; pixShade = sh; pixIdx = idx; pixCount = n; pixS = S;
+  }
+
+  function drawPlanet() {
+    if (tex.ready && sphereImg) {
+      var d = sphereImg.data, td = tex.data, tw = tex.w;
+      var TWO = Math.PI * 2;
+      for (var i = 0; i < pixCount; i++) {
+        var lon = pixLon[i] + ROT;
+        var u = (lon / TWO) % 1; if (u < 0) u += 1;
+        var s4 = (pixV[i] * tw + ((u * tw) | 0)) * 4;
+        var sh = pixShade[i], o = pixIdx[i];
+        d[o]     = td[s4]     * sh;
+        d[o + 1] = td[s4 + 1] * sh;
+        d[o + 2] = td[s4 + 2] * sh;
+        d[o + 3] = 255;
+      }
+      sphereX.putImageData(sphereImg, 0, 0);
+      x.drawImage(sphereC, CX - R, CY - R, 2 * R, 2 * R);
+    } else {
+      // fallback mentre la texture carica
+      var g = x.createRadialGradient(CX, CY - R * 0.3, R * 0.1, CX, CY, R);
+      g.addColorStop(0, "rgba(20,27,48,0.98)");
+      g.addColorStop(1, "rgba(10,14,26,0.98)");
+      x.fillStyle = g;
+      x.beginPath(); x.arc(CX, CY, R, 0, Math.PI * 2); x.fill();
+    }
+  }
+
+  // ---------- costellazioni reali (posizioni approssimate) ----------
+  var CONSTELLATIONS = [
+    { label: "URSA MAIOR", lx: 0.30, ly: 0.10,
+      stars: [[0.30,0.155],[0.255,0.185],[0.24,0.235],[0.29,0.245],[0.33,0.245],[0.375,0.23],[0.42,0.21]],
+      lines: [[0,1],[1,2],[2,3],[3,0],[3,4],[4,5],[5,6]] },          // Grande Carro
+    { label: "CASSIOPEIA", lx: 0.50, ly: 0.055,
+      stars: [[0.50,0.075],[0.525,0.105],[0.545,0.085],[0.57,0.11],[0.59,0.085]],
+      lines: [[0,1],[1,2],[2,3],[3,4]] },                            // la W
+    { label: "ORION", lx: 0.085, ly: 0.60,
+      stars: [[0.13,0.60],[0.085,0.615],[0.115,0.67],[0.108,0.685],[0.10,0.70],[0.115,0.755],[0.075,0.745]],
+      lines: [[0,2],[1,4],[2,3],[3,4],[2,5],[4,6]] },
+    { label: "CYGNUS", lx: 0.555, ly: 0.80,
+      stars: [[0.60,0.78],[0.595,0.825],[0.555,0.845],[0.635,0.855],[0.60,0.90]],
+      lines: [[0,1],[1,4],[1,2],[1,3]] }                             // la Croce del Nord
+  ];
+
+  function drawStars() {
+    // campo stellare diffuso, piu' presente
+    x.fillStyle = "rgba(244,244,242,0.55)";
+    for (var s2 = 0; s2 < 120; s2++) {
+      var hx = (s2 * 137.5077) % W, hy = (s2 * 89.7233) % H;
+      var sz = s2 % 7 === 0 ? 2 : 1;
+      x.fillRect(hx, hy, sz, sz);
+    }
+    // costellazioni: linee tenui + stelle brillanti + etichetta
+    for (var ci = 0; ci < CONSTELLATIONS.length; ci++) {
+      var cons = CONSTELLATIONS[ci];
+      x.strokeStyle = "rgba(111,140,255,0.28)";
+      x.lineWidth = 1;
+      x.beginPath();
+      for (var li = 0; li < cons.lines.length; li++) {
+        var a = cons.stars[cons.lines[li][0]], b = cons.stars[cons.lines[li][1]];
+        x.moveTo(a[0] * W, a[1] * H);
+        x.lineTo(b[0] * W, b[1] * H);
+      }
+      x.stroke();
+      for (var si = 0; si < cons.stars.length; si++) {
+        var sx = cons.stars[si][0] * W, sy = cons.stars[si][1] * H;
+        x.fillStyle = "#f4f4f2";
+        x.beginPath(); x.arc(sx, sy, 1.7, 0, Math.PI * 2); x.fill();
+        x.strokeStyle = "rgba(111,140,255,0.35)";
+        x.beginPath(); x.arc(sx, sy, 3.4, 0, Math.PI * 2); x.stroke();
+      }
+      x.fillStyle = "rgba(111,140,255,0.45)";
+      x.font = "9px monospace";
+      x.fillText(cons.label, cons.lx * W, cons.ly * H);
+    }
+  }
+
+  // ---------- griglia: meridiani e paralleli, azzurrini, dissolvenza al bordo ----------
   function gridCircle(fn, steps) {
-    // griglia a segmenti con dissolvenza al bordo: la linea sparisce
-    // gradualmente alla silhouette, niente "pop" ne' salti
     for (var i = 0; i < steps; i++) {
       var a = fn(i / steps * Math.PI * 2);
       var b = fn((i + 1) / steps * Math.PI * 2);
       var pa = proj(a[0], a[1], a[2]);
       var pb = proj(b[0], b[1], b[2]);
       var mz = (pa.z + pb.z) / 2;
-      if (mz > R * 0.15) continue;                  // dietro: coperto dal disco
-      var fade = 1 - Math.max(0, mz) / (R * 0.15);  // 1 davanti -> 0 al bordo
+      if (mz > R * 0.15) continue;
+      var fade = 1 - Math.max(0, mz) / (R * 0.15);
       if (fade <= 0.02) continue;
-      x.strokeStyle = "rgba(244,244,242," + (0.07 * fade).toFixed(4) + ")";
+      x.strokeStyle = "rgba(111,140,255," + (0.16 * fade).toFixed(4) + ")";
       x.beginPath(); x.moveTo(pa.x, pa.y); x.lineTo(pb.x, pb.y); x.stroke();
     }
   }
@@ -313,16 +431,11 @@
     ROT += 0.0016;
     x.clearRect(0, 0, W, H);
 
-    // stelle fisse, tenui (disegnate per prime: dietro la sfera restano coperte)
-    x.fillStyle = "rgba(244,244,242,0.35)";
-    for (var s2 = 0; s2 < 60; s2++) {
-      var hx = (s2 * 137.5) % W, hy = (s2 * 89.7) % H;
-      x.fillRect(hx, hy, 1, 1);
-    }
+    drawStars();
 
     x.lineWidth = 1;
 
-    // orbita completa e continua (la parte dietro verra' coperta dal disco)
+    // orbita completa e continua (la parte dietro verra' coperta dal pianeta)
     var t = performance.now() * 0.00035;
     x.strokeStyle = "rgba(111,140,255,0.35)";
     x.beginPath();
@@ -333,14 +446,10 @@
     }
     x.stroke();
 
-    // disco opaco del pianeta
-    var g = x.createRadialGradient(CX, CY - R * 0.3, R * 0.1, CX, CY, R);
-    g.addColorStop(0, "rgba(20,27,48,0.98)");
-    g.addColorStop(1, "rgba(10,14,26,0.98)");
-    x.fillStyle = g;
-    x.beginPath(); x.arc(CX, CY, R, 0, Math.PI * 2); x.fill();
+    // pianeta: texture reale della Terra (opaco) o disco di fallback
+    drawPlanet();
 
-    // griglia sopra il disco (meridiani + paralleli, con dissolvenza al bordo)
+    // griglia sopra il pianeta
     for (var m = 0; m < 12; m++) {
       var am = m / 12 * Math.PI;
       gridCircle(function (t2) {
@@ -353,9 +462,7 @@
       gridCircle(function (t2) { return [Math.sin(t2) * r2, py, Math.cos(t2) * r2]; }, 128);
     }
 
-    // scia: un intero giro di orbita dietro al satellite, con alpha decrescente.
-    // Ocultata SOLO dove passa davvero dietro il globo: la parte davanti alla
-    // sfera resta sempre visibile.
+    // scia: un giro intero di orbita, alpha decrescente, occultata dietro il globo
     var su = t;
     var TRAILN = 160, STEP = Math.PI * 2 / 160;
     var prev = null;
@@ -371,7 +478,7 @@
       prev = p2;
     }
 
-    // satellite (occultato solo quando sta davvero dietro il globo)
+    // satellite
     var sat = proj(Math.sin(su) * R * 1.45, Math.cos(su) * R * 1.45 * 0.35, Math.cos(su) * R * 1.45);
     if (!behindGlobe(sat)) {
       x.fillStyle = "#f4f4f2";
@@ -384,6 +491,7 @@
   }
   draw();
 })();
+;
 
 
 // ---------- reveal on scroll ----------
