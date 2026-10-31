@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Andrea Taddei</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0b0e14;
+    --fg: #e8ecf4;
+    --muted: #8b93a7;
+    --accent: #6ea8fe;
+    --accent2: #9d7bff;
+    --card: rgba(255,255,255,.04);
+    --border: rgba(255,255,255,.09);
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--fg);
+    min-height: 100vh; overflow-x: hidden;
+  }
+  .glow { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+  .glow::before, .glow::after {
+    content: ""; position: absolute; width: 55vmax; height: 55vmax; border-radius: 50%;
+    filter: blur(90px); opacity: .18;
+  }
+  .glow::before { background: var(--accent); top: -20vmax; left: -15vmax; animation: drift 18s ease-in-out infinite alternate; }
+  .glow::after { background: var(--accent2); bottom: -25vmax; right: -15vmax; animation: drift 22s ease-in-out infinite alternate-reverse; }
+  @keyframes drift { to { transform: translate(8vmax, 6vmax) scale(1.15); } }
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem clamp(1.2rem, 5vw, 4rem);
+    backdrop-filter: blur(12px);
+    background: rgba(11,14,20,.6); border-bottom: 1px solid var(--border);
+  }
+  .logo { font-weight: 700; letter-spacing: .02em; }
+  .logo span { color: var(--accent); }
+  nav ul { display: flex; gap: 1.6rem; list-style: none; }
+  nav a { color: var(--muted); text-decoration: none; font-size: .92rem; transition: color .2s; }
+  nav a:hover { color: var(--fg); }
+  main { max-width: 880px; margin: 0 auto; padding: 0 clamp(1.2rem, 5vw, 2rem); }
+  header.hero { padding: clamp(4rem, 12vh, 7rem) 0 4rem; }
+  .hero .kicker {
+    color: var(--accent); font-size: .85rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .18em; margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.4rem, 7vw, 4.2rem); line-height: 1.05; font-weight: 800;
+    background: linear-gradient(90deg, var(--fg) 40%, var(--accent) 75%, var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p.sub { margin-top: 1.3rem; color: var(--muted); font-size: 1.1rem; max-width: 34rem; line-height: 1.65; }
+  .hero .cta { margin-top: 2.2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: .8rem 1.5rem; border-radius: 10px;
+    text-decoration: none; font-weight: 600; font-size: .95rem; transition: transform .2s, box-shadow .2s;
+  }
+  .btn.primary { background: linear-gradient(90deg, var(--accent), var(--accent2)); color: #0b0e14; box-shadow: 0 6px 24px rgba(110,168,254,.25); }
+  .btn.ghost { border: 1px solid var(--border); color: var(--fg); background: var(--card); }
+  .btn:hover { transform: translateY(-2px); }
+  section { padding: 3.2rem 0; }
+  h2 { font-size: 1.35rem; margin-bottom: 1.4rem; display: flex; align-items: center; gap: .7rem; }
+  h2::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 1.4rem; transition: transform .2s, border-color .2s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: rgba(110,168,254,.45); }
+  .card h3 { font-size: 1rem; margin-bottom: .5rem; }
+  .card p { color: var(--muted); font-size: .9rem; line-height: 1.55; }
+  footer {
+    border-top: 1px solid var(--border); margin-top: 2rem;
+    padding: 2rem clamp(1.2rem, 5vw, 4rem);
+    display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    color: var(--muted); font-size: .85rem;
+  }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--fg); }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+<nav>
+  <div class="logo">andrea<span>.taddei</span></div>
+  <ul>
+    <li><a href="#chi-sono">Chi sono</a></li>
+    <li><a href="#progetti">Progetti</a></li>
+    <li><a href="https://github.com/andreataddei" target="_blank" rel="noopener">GitHub</a></li>
+  </ul>
+</nav>
+<main>
+  <header class="hero">
+    <div class="kicker">Benvenuto · Welcome</div>
+    <h1>Ciao, sono<br />Andrea Taddei.</h1>
+    <p class="sub">
+      Questa è la mia pagina personale: i miei progetti, le mie idee e
+      tutto ciò che costruisco, in un unico posto.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="#progetti">Scopri i progetti</a>
+      <a class="btn ghost" href="https://github.com/andreataddei" target="_blank" rel="noopener">Seguimi su GitHub</a>
+    </div>
+  </header>
+  <section id="chi-sono">
+    <h2>Chi sono</h2>
+    <div class="grid">
+      <div class="card"><h3>🛠️ Maker</h3><p>Mi piace trasformare idee in cose concrete: siti, tool, esperimenti.</p></div>
+      <div class="card"><h3>💡 Curioso</h3><p>Tecnologia, design e tutto ciò che sta in mezzo.</p></div>
+      <div class="card"><h3>🌍 Italiano</h3><p>Based in Italia, ma online non ci sono confini.</p></div>
+    </div>
+  </section>
+  <section id="progetti">
+    <h2>Progetti</h2>
+    <div class="grid">
+      <div class="card"><h3>📁 I miei repository</h3><p>Tutto il codice che pubblico è su GitHub: dai un'occhiata e sentiti libero di contribuire.</p></div>
+      <div class="card"><h3>🚀 Questo sito</h3><p>Costruito a mano in HTML e CSS, ospitato gratuitamente su GitHub Pages.</p></div>
+      <div class="card"><h3>✨ Prossimamente</h3><p>Nuovi progetti in arrivo: torna a trovarmi.</p></div>
+    </div>
+  </section>
+</main>
+<footer>
+  <div>© <span id="year"></span> Andrea Taddei</div>
+  <div><a href="https://github.com/andreataddei/andreataddei.github.io" target="_blank" rel="noopener">Codice sorgente di questa pagina</a></div>
+</footer>
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
