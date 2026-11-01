@@ -6,64 +6,7 @@
 <title>Focus — Andrea Taddei</title>
 <meta name="description" content="Andrea Taddei — focus areas: extended reality, AI and machine learning, space and geospatial data, data engineering." />
 <link rel="canonical" href="https://andreataddei.github.io/focus.html" />
-<style>
-  :root {
-    --bg: #060607; --bg2: #0a0a0c;
-    --fg: #f4f4f2; --muted: #9a9a97;
-    --line: rgba(244,244,242,.12);
-    --accent: #6f8cff;
-    --mono: "SF Mono", ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--bg); color: var(--fg);
-    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-    -webkit-font-smoothing: antialiased; overflow-x: hidden;
-  }
-  ::selection { background: var(--accent); color: #060607; }
-  #orbit { position: fixed; inset: 0; z-index: 0; display: block; }
-  .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 clamp(1.4rem, 5vw, 3rem); }
-  nav { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(10px); background: rgba(6,6,7,.72); border-bottom: 1px solid var(--line); }
-  nav .wrap { display: flex; justify-content: space-between; align-items: center; padding-top: 1.1rem; padding-bottom: 1.1rem; }
-  .brand { font-family: var(--mono); font-size: .82rem; letter-spacing: .14em; text-decoration: none; color: var(--fg); }
-  .brand b { color: var(--accent); font-weight: 600; }
-  nav ul { display: flex; gap: 2rem; list-style: none; }
-  nav ul a { color: var(--muted); text-decoration: none; font-size: .82rem; font-family: var(--mono); letter-spacing: .08em; transition: color .25s; }
-  nav ul a:hover, nav ul a[aria-current="page"] { color: var(--fg); }
-
-  .page-head { padding: 7rem 0 3rem; }
-  .page-head .num { font-family: var(--mono); font-size: .75rem; color: var(--accent); letter-spacing: .2em; }
-  .page-head h1 { font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 600; letter-spacing: -.03em; margin-top: .9rem; }
-  .page-head p { margin-top: 1.3rem; color: var(--muted); max-width: 36rem; line-height: 1.7; font-size: 1.02rem; }
-
-  .area-detail { border-top: 1px solid var(--line); padding: 3.2rem 0; }
-  .area-detail .idx { font-family: var(--mono); font-size: .75rem; color: var(--accent); letter-spacing: .2em; }
-  .area-detail h2 { font-size: clamp(1.4rem, 3.4vw, 2.1rem); font-weight: 600; margin: .8rem 0 1.1rem; letter-spacing: -.01em; }
-  .area-detail .desc { color: var(--muted); line-height: 1.75; max-width: 42rem; font-size: .98rem; }
-  .tags { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1.6rem; }
-  .tags span {
-    font-family: var(--mono); font-size: .7rem; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--muted);
-    border: 1px solid var(--line); padding: .38rem .8rem; border-radius: 999px;
-    transition: color .25s, border-color .25s;
-  }
-  .area-detail:hover .tags span { color: var(--fg); border-color: rgba(111,140,255,.45); }
-
-  footer { border-top: 1px solid var(--line); }
-  footer .wrap {
-    display: flex; justify-content: space-between; align-items: center;
-    padding-top: 1.6rem; padding-bottom: 1.6rem; gap: 1rem; flex-wrap: wrap;
-    font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: .08em;
-  }
-  footer a { color: var(--muted); text-decoration: none; }
-  footer a:hover { color: var(--fg); }
-
-  .rv { opacity: 0; transform: translateY(22px); transition: opacity .8s ease, transform .8s ease; }
-  .rv.on { opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) { .rv { opacity: 1; transform: none; transition: none; } }
-  @media (max-width: 640px) { nav ul { gap: 1.1rem; } }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -73,7 +16,6 @@
   <div class="wrap">
     <a class="brand" href="index.html">AT<b>/</b>ANDREA TADDEI</a>
     <ul>
-      <li><a href="index.html">Home</a></li>
       <li><a href="focus.html" aria-current="page">Focus</a></li>
       <li><a href="work.html">Work</a></li>
       <li><a href="contact.html">Contact</a></li>
@@ -161,89 +103,11 @@
     <span>
       <a href="https://www.linkedin.com/in/taddeiandrea" target="_blank" rel="noopener">LINKEDIN</a> ·
       <a href="https://x.com/taddeiandrea" target="_blank" rel="noopener">X</a> ·
-      <a href="https://vimeo.com/andreataddei" target="_blank" rel="noopener">VIMEO</a> ·
       <a href="https://github.com/andreataddei" target="_blank" rel="noopener">GITHUB</a>
     </span>
   </div>
 </footer>
 
-<script>
-(function () {
-  var c = document.getElementById("orbit");
-  var x = c.getContext("2d");
-  var W, H, CX, CY, R;
-  function resize() {
-    W = c.width = window.innerWidth;
-    H = c.height = window.innerHeight;
-    CX = W * 0.82; CY = H * 0.30;
-    R = Math.min(W, H) * 0.22;
-  }
-  window.addEventListener("resize", resize); resize();
-  var ROT = 0;
-  function proj(px, py, pz) {
-    var rx = px * Math.cos(ROT) - pz * Math.sin(ROT);
-    var rz = px * Math.sin(ROT) + pz * Math.cos(ROT);
-    var s = 1 / (1 + rz / (R * 6));
-    return { x: CX + rx * s, y: CY + py * s };
-  }
-  function circle3D(steps, fn) {
-    x.beginPath();
-    for (var i = 0; i <= steps; i++) {
-      var p = fn(i / steps * Math.PI * 2);
-      var pr = proj(p[0], p[1], p[2]);
-      if (i === 0) x.moveTo(pr.x, pr.y); else x.lineTo(pr.x, pr.y);
-    }
-  }
-  function draw() {
-    ROT += 0.0012;
-    x.clearRect(0, 0, W, H);
-    x.lineWidth = 1;
-    x.strokeStyle = "rgba(244,244,242,0.06)";
-    for (var m = 0; m < 12; m++) {
-      var a = m / 12 * Math.PI;
-      circle3D(64, function (t) {
-        return [Math.sin(t) * R * Math.cos(a), Math.cos(t) * R, Math.sin(t) * R * Math.sin(a)];
-      });
-      x.stroke();
-    }
-    for (var pa = 1; pa < 8; pa++) {
-      var phi = (pa / 8 - 0.5) * Math.PI;
-      var r2 = R * Math.cos(phi), py = R * Math.sin(phi);
-      circle3D(64, function (t) { return [Math.sin(t) * r2, py, Math.cos(t) * r2]; });
-      x.stroke();
-    }
-    var t = performance.now() * 0.00035;
-    x.strokeStyle = "rgba(111,140,255,0.3)";
-    circle3D(96, function (u) {
-      return [Math.sin(u) * R * 1.45, Math.cos(u) * R * 1.45 * 0.35, Math.cos(u) * R * 1.45];
-    });
-    x.stroke();
-    var su = t;
-    var sat = proj(Math.sin(su) * R * 1.45, Math.cos(su) * R * 1.45 * 0.35, Math.cos(su) * R * 1.45);
-    x.fillStyle = "#f4f4f2";
-    x.beginPath(); x.arc(sat.x, sat.y, 2.4, 0, Math.PI * 2); x.fill();
-    x.strokeStyle = "rgba(111,140,255,0.5)";
-    x.beginPath(); x.arc(sat.x, sat.y, 6.5, 0, Math.PI * 2); x.stroke();
-    x.fillStyle = "rgba(244,244,242,0.3)";
-    for (var s2 = 0; s2 < 60; s2++) {
-      x.fillRect((s2 * 137.5) % W, (s2 * 89.7) % H, 1, 1);
-    }
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
-
-(function () {
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) { e.target.classList.add("on"); io.unobserve(e.target); }
-    });
-  }, { threshold: 0.15 });
-  document.querySelectorAll(".rv").forEach(function (el) { io.observe(el); });
-})();
-
-document.getElementById("year").textContent = new Date().getFullYear();
-</script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" nonce="ge0PJgHoB6rjsOnmrrZXHg==" data-cf-beacon='{"version":"2024.11.0","token":"36b4216ae2dc4d5488c249161e71fe1e","spa":2}' crossorigin="anonymous"></script>
+<script src="main.js"></script>
 </body>
 </html>
