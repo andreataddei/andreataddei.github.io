@@ -2,14 +2,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="576" height="576" viewBox="0 0 576 576">
   <defs>
     <linearGradient id="gt" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="576">
-      <stop offset="0" stop-color="#A877E8"/>
-      <stop offset="0.5" stop-color="#8A87E8"/>
-      <stop offset="1" stop-color="#6A99E8"/>
+      <stop offset="0" stop-color="#B388FF"/>
+      <stop offset="1" stop-color="#88D8FF"/>
     </linearGradient>
     <linearGradient id="gc" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="576">
-      <stop offset="0" stop-color="#6AE8E8"/>
-      <stop offset="0.5" stop-color="#6AE8B8"/>
-      <stop offset="1" stop-color="#6AE88A"/>
+      <stop offset="0" stop-color="#88D8FF"/>
+      <stop offset="1" stop-color="#88FFD8"/>
     </linearGradient>
   </defs>
   <g transform="translate(0.000000,576.000000) scale(0.100000,-0.100000)" stroke="none">
