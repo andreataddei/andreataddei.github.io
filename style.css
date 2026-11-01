@@ -38,7 +38,13 @@ body {
   position: fixed;
   inset: 0;
   z-index: 0;
-  display:block
+  display:block;
+  animation: orbitIn 1.8s ease-out .15s both
+}
+
+@keyframes orbitIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
 }
 
 .wrap {
@@ -400,6 +406,10 @@ footer a:hover {
     animation: none
   }
 
+  #orbit {
+    animation: none
+  }
+
 }
 
 @media (max-width: 640px) {
@@ -455,7 +465,13 @@ body {
   position: fixed;
   inset: 0;
   z-index: 0;
-  display:block
+  display:block;
+  animation: orbitIn 1.8s ease-out .15s both
+}
+
+@keyframes orbitIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
 }
 
 .wrap {
@@ -653,6 +669,10 @@ footer a:hover {
     animation: none
   }
 
+  #orbit {
+    animation: none
+  }
+
 }
 
 @media (max-width: 640px) {
@@ -700,7 +720,13 @@ body {
   position: fixed;
   inset: 0;
   z-index: 0;
-  display:block
+  display:block;
+  animation: orbitIn 1.8s ease-out .15s both
+}
+
+@keyframes orbitIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
 }
 
 .wrap {
@@ -922,6 +948,10 @@ footer a:hover {
     animation: none
   }
 
+  #orbit {
+    animation: none
+  }
+
 }
 
 @media (max-width: 640px) {
@@ -973,7 +1003,13 @@ body {
   position: fixed;
   inset: 0;
   z-index: 0;
-  display:block
+  display:block;
+  animation: orbitIn 1.8s ease-out .15s both
+}
+
+@keyframes orbitIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
 }
 
 .wrap {
@@ -1244,6 +1280,10 @@ footer a:hover {
   }
 
   nav {
+    animation: none
+  }
+
+  #orbit {
     animation: none
   }
 
