@@ -35,3 +35,22 @@ yarn-error.log*
 .vscode/
 *.swp
 *~
+
+# Secrets / credentials — never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+*secret*
+*credential*
+*token*
+*apikey*
+*api_key*
+auth.json
+service-account*.json
+*.kdbx
