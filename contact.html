@@ -531,8 +531,15 @@
 // ---------- reveal on scroll ----------
 (function () {
   var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) { e.target.classList.add("on"); io.unobserve(e.target); }
+    var hit = [];
+    for (var i = 0; i < entries.length; i++) if (entries[i].isIntersecting) hit.push(entries[i]);
+    hit.sort(function (a, b) {
+      return (a.target.compareDocumentPosition(b.target) & 2) ? -1 : 1;
+    });
+    hit.forEach(function (e, i) {
+      e.target.style.transitionDelay = (i * 0.5) + "s";
+      e.target.classList.add("on");
+      io.unobserve(e.target);
     });
   }, { threshold: 0.15 });
   document.querySelectorAll(".rv").forEach(function (el) { io.observe(el); });
