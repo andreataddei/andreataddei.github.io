@@ -9,7 +9,6 @@
       <stop offset="1" stop-color="#00FFD1"/>
     </linearGradient>
   </defs>
-  <rect width="512" height="512" fill="#060607"/>
   <g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="60">
     <path d="M256 138 L110 386 L256 386" stroke="url(#ga)"/>
     <path d="M256 138 L402 386 L256 386" stroke="url(#gb)"/>
