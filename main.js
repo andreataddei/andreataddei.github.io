@@ -472,7 +472,7 @@
       return (a.target.compareDocumentPosition(b.target) & 2) ? -1 : 1;
     });
     hit.forEach(function (e, i) {
-      e.target.style.transitionDelay = (i * 0.2) + "s";
+      e.target.style.transitionDelay = (i * 0.12) + "s";
       e.target.classList.add("on");
       io.unobserve(e.target);
     });

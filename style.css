@@ -55,7 +55,13 @@ nav {
   z-index: 20;
   backdrop-filter: blur(10px);
   background: rgba(6,6,7,.72);
-  border-bottom: 1px solid var(--line)
+  border-bottom: 1px solid var(--line);
+  animation: navIn .7s .05s cubic-bezier(.22,1,.36,1) both
+}
+
+@keyframes navIn {
+  from { opacity: 0; transform: translateY(-10px) }
+  to { opacity: 1; transform: none }
 }
 
 nav .wrap {
@@ -371,20 +377,27 @@ footer a:hover {
 
 .rv {
   opacity: 0;
-  transform: translateY(22px);
-  transition:opacity .8s ease,transform .8s ease
+  transform: translateY(26px);
+  filter: blur(8px);
+  transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1), filter .9s cubic-bezier(.22,1,.36,1)
 }
 
 .rv.on {
   opacity: 1;
-  transform:none
+  transform: none;
+  filter: blur(0)
 }
 
 @media (prefers-reduced-motion: reduce) {
   .rv {
     opacity: 1;
     transform: none;
+    filter: none;
     transition:none
+  }
+
+  nav {
+    animation: none
   }
 
 }
@@ -459,7 +472,13 @@ nav {
   z-index: 20;
   backdrop-filter: blur(10px);
   background: rgba(6,6,7,.72);
-  border-bottom: 1px solid var(--line)
+  border-bottom: 1px solid var(--line);
+  animation: navIn .7s .05s cubic-bezier(.22,1,.36,1) both
+}
+
+@keyframes navIn {
+  from { opacity: 0; transform: translateY(-10px) }
+  to { opacity: 1; transform: none }
 }
 
 nav .wrap {
@@ -611,20 +630,27 @@ footer a:hover {
 
 .rv {
   opacity: 0;
-  transform: translateY(22px);
-  transition:opacity .8s ease,transform .8s ease
+  transform: translateY(26px);
+  filter: blur(8px);
+  transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1), filter .9s cubic-bezier(.22,1,.36,1)
 }
 
 .rv.on {
   opacity: 1;
-  transform:none
+  transform: none;
+  filter: blur(0)
 }
 
 @media (prefers-reduced-motion: reduce) {
   .rv {
     opacity: 1;
     transform: none;
+    filter: none;
     transition:none
+  }
+
+  nav {
+    animation: none
   }
 
 }
@@ -691,7 +717,13 @@ nav {
   z-index: 20;
   backdrop-filter: blur(10px);
   background: rgba(6,6,7,.72);
-  border-bottom: 1px solid var(--line)
+  border-bottom: 1px solid var(--line);
+  animation: navIn .7s .05s cubic-bezier(.22,1,.36,1) both
+}
+
+@keyframes navIn {
+  from { opacity: 0; transform: translateY(-10px) }
+  to { opacity: 1; transform: none }
 }
 
 nav .wrap {
@@ -867,20 +899,27 @@ footer a:hover {
 
 .rv {
   opacity: 0;
-  transform: translateY(22px);
-  transition:opacity .8s ease,transform .8s ease
+  transform: translateY(26px);
+  filter: blur(8px);
+  transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1), filter .9s cubic-bezier(.22,1,.36,1)
 }
 
 .rv.on {
   opacity: 1;
-  transform:none
+  transform: none;
+  filter: blur(0)
 }
 
 @media (prefers-reduced-motion: reduce) {
   .rv {
     opacity: 1;
     transform: none;
+    filter: none;
     transition:none
+  }
+
+  nav {
+    animation: none
   }
 
 }
@@ -951,7 +990,13 @@ nav {
   z-index: 20;
   backdrop-filter: blur(10px);
   background: rgba(6,6,7,.72);
-  border-bottom: 1px solid var(--line)
+  border-bottom: 1px solid var(--line);
+  animation: navIn .7s .05s cubic-bezier(.22,1,.36,1) both
+}
+
+@keyframes navIn {
+  from { opacity: 0; transform: translateY(-10px) }
+  to { opacity: 1; transform: none }
 }
 
 nav .wrap {
@@ -1179,20 +1224,27 @@ footer a:hover {
 
 .rv {
   opacity: 0;
-  transform: translateY(22px);
-  transition:opacity .8s ease,transform .8s ease
+  transform: translateY(26px);
+  filter: blur(8px);
+  transition: opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1), filter .9s cubic-bezier(.22,1,.36,1)
 }
 
 .rv.on {
   opacity: 1;
-  transform:none
+  transform: none;
+  filter: blur(0)
 }
 
 @media (prefers-reduced-motion: reduce) {
   .rv {
     opacity: 1;
     transform: none;
+    filter: none;
     transition:none
+  }
+
+  nav {
+    animation: none
   }
 
 }
