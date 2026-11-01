@@ -88,6 +88,12 @@ nav .wrap {
   color: var(--fg)
 }
 
+.brand svg.brand-logo {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
 .brand b {
   color: var(--accent);
   font-weight:600
