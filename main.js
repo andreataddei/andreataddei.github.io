@@ -477,7 +477,10 @@
       io.unobserve(e.target);
     });
   }, { threshold: 0.15 });
-  document.querySelectorAll(".rv").forEach(function (el) { io.observe(el); });
+  window.observeRv = function (root) {
+    (root || document).querySelectorAll(".rv").forEach(function (el) { io.observe(el); });
+  };
+  window.observeRv(document);
 })();
 
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -485,3 +488,68 @@ var _sent = document.getElementById("sent");
 if (_sent && new URLSearchParams(window.location.search).get("sent") === "1") {
   _sent.classList.add("on");
 }
+
+// ---------- navigazione SPA: il canvas resta vivo tra le pagine ----------
+(function () {
+  if (!window.fetch || !window.DOMParser || !window.history || !history.pushState) return;
+
+  function norm(p) {
+    if (p === "/" || p === "/index.html") return "/";
+    return p;
+  }
+  function mainWrap() {
+    return document.querySelector("nav + .wrap");
+  }
+  function updateNav(path) {
+    var cur = norm(path);
+    document.querySelectorAll("nav ul a").forEach(function (a) {
+      if (norm(new URL(a.getAttribute("href"), location.href).pathname) === cur) {
+        a.setAttribute("aria-current", "page");
+      } else {
+        a.removeAttribute("aria-current");
+      }
+    });
+  }
+  function swapTo(path, push) {
+    fetch(path, { headers: { "X-SPA": "1" } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        var next = doc.querySelector("nav + .wrap");
+        var cur = mainWrap();
+        if (!next || !cur) { location.href = path; return; }
+        cur.replaceWith(document.importNode(next, true));
+        document.title = doc.title;
+        var meta = doc.querySelector('meta[name="description"]');
+        var curMeta = document.querySelector('meta[name="description"]');
+        if (meta && curMeta) curMeta.setAttribute("content", meta.getAttribute("content"));
+        if (push) history.pushState({}, "", path);
+        updateNav(new URL(path, location.href).pathname);
+        window.scrollTo(0, 0);
+        window.observeRv(mainWrap());
+        var sent = document.getElementById("sent");
+        if (sent && new URLSearchParams(new URL(path, location.href).search).get("sent") === "1") {
+          sent.classList.add("on");
+        }
+      })
+      .catch(function () { location.href = path; }); // fallback: pagina intera
+  }
+
+  document.addEventListener("click", function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest ? e.target.closest("a") : null;
+    if (!a) return;
+    var href = a.getAttribute("href");
+    if (!href || a.target === "_blank" || href.charAt(0) === "#" || /^(mailto|tel):/i.test(href)) return;
+    var url = new URL(href, location.href);
+    if (url.origin !== location.origin) return;
+    if (!/\.html$|^\/$/.test(url.pathname)) return; // directory/asset: lascia al browser
+    if (norm(url.pathname) === norm(location.pathname)) return; // stesso documento: anchor default
+    e.preventDefault();
+    swapTo(url.pathname + url.search, true);
+  });
+
+  window.addEventListener("popstate", function () {
+    swapTo(location.pathname + location.search, false);
+  });
+})();
