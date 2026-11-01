@@ -61,7 +61,7 @@ nav {
 nav .wrap {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   padding-top: 1.1rem;
   padding-bottom:1.1rem
 }
@@ -461,7 +461,7 @@ nav {
 nav .wrap {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   padding-top: 1.1rem;
   padding-bottom:1.1rem
 }
@@ -689,7 +689,7 @@ nav {
 nav .wrap {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   padding-top: 1.1rem;
   padding-bottom:1.1rem
 }
@@ -945,7 +945,7 @@ nav {
 nav .wrap {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   padding-top: 1.1rem;
   padding-bottom:1.1rem
 }
