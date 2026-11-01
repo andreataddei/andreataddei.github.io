@@ -37,9 +37,9 @@
   .page-head h1 { font-size: clamp(2.2rem, 6vw, 4rem); font-weight: 600; letter-spacing: -.03em; margin-top: .9rem; }
   .page-head p { margin-top: 1.3rem; color: var(--muted); max-width: 36rem; line-height: 1.7; font-size: 1.02rem; }
 
-  .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 3rem; padding: 2rem 0 6rem; align-items: start; }
-  .cform { margin-top: 2.4rem; }
-  .cform .flabel { font-family: var(--mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .18em; color: var(--muted); margin-bottom: .8rem; }
+  .contact-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; padding: 2rem 0 6rem; align-items: start; }
+  .cform { margin-top: 0; }
+  .cform .flabel { font-family: var(--mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .2em; color: var(--accent); margin-bottom: 1.4rem; }
   .cform input, .cform textarea {
     display: block; width: 100%; box-sizing: border-box;
     background: transparent; border: 1px solid var(--line);
@@ -126,6 +126,18 @@
   </header>
 
   <div class="contact-grid">
+    <form class="cform rv" id="cform" action="https://formspree.io/f/FORM_ID" method="POST">
+      <div class="flabel">Direct transmission</div>
+      <input type="text" name="name" placeholder="Your name" required>
+      <input type="email" name="email" placeholder="Your email" required>
+      <textarea name="message" placeholder="Your message" required></textarea>
+      <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
+      <input type="hidden" name="_subject" value="Messaggio dal sito andreataddei.github.io">
+      <input type="hidden" name="_next" value="https://andreataddei.github.io/contact.html?sent=1">
+      <button type="submit">Send message</button>
+      <div class="sent" id="sent">Message received. I'll get back to you within 48h.</div>
+    </form>
+
     <aside class="info-card rv">
       <h2>Transmission info</h2>
       <div class="info-row">
@@ -145,18 +157,6 @@
         <div class="v">Full-time · Consulting · Collaboration</div>
       </div>
     </aside>
-
-    <form class="cform rv" id="cform" action="https://formspree.io/f/FORM_ID" method="POST">
-      <div class="flabel">Direct transmission</div>
-      <input type="text" name="name" placeholder="Your name" required>
-      <input type="email" name="email" placeholder="Your email" required>
-      <textarea name="message" placeholder="Your message" required></textarea>
-      <input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off">
-      <input type="hidden" name="_subject" value="Messaggio dal sito andreataddei.github.io">
-      <input type="hidden" name="_next" value="https://andreataddei.github.io/contact.html?sent=1">
-      <button type="submit">Send message</button>
-      <div class="sent" id="sent">Message received. I'll get back to you within 48h.</div>
-    </form>
   </div>
 
   <div class="big-cta rv">
