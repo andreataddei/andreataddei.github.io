@@ -11,6 +11,11 @@
   var sphereImg = null, pixLon = null, pixV = null, pixShade = null, pixIdx = null, pixCount = 0;
   var frame = 0;
 
+  var _rsT = 0, _rsFirst = true;
+  function scheduleSphere() {
+    if (_rsT) return;
+    _rsT = setTimeout(function () { _rsT = 0; rebuildSphere(); }, 150);
+  }
   function resize() {
     DPR = Math.min(2, window.devicePixelRatio || 1);
     W = window.innerWidth; H = window.innerHeight;
@@ -19,7 +24,8 @@
     x.setTransform(DPR, 0, 0, DPR, 0, 0);
     CX = W * 0.78; CY = H * 0.42;
     R = Math.min(W, H) * 0.30;
-    rebuildSphere();
+    if (_rsFirst) { _rsFirst = false; rebuildSphere(); }
+    else scheduleSphere();
   }
   window.addEventListener("resize", resize); resize();
 
@@ -88,6 +94,7 @@
 
   function rebuildSphere() {
     var S = Math.max(64, Math.min(1024, Math.round(R * 2 * DPR)));
+    if (sphereC.width === S && pixLon) return; // stessa risoluzione: niente da rifare
     sphereC.width = sphereC.height = S;
     sphereX = sphereC.getContext("2d");
     sphereImg = sphereX.createImageData(S, S);
