@@ -81,23 +81,24 @@
 
   function loadFromRepo() {
     if (window.fetch) {
-      fetch("earth.txt").then(function (r) { return r.text(); }).then(function (b64) {
+      fetch("/earth.txt").then(function (r) { return r.text(); }).then(function (b64) {
         img.src = "data:image/jpeg;base64," + b64.replace(/\s+/g, "");
       }).catch(function () { loadFromCDN(); });
     } else { loadFromCDN(); }
   }
   function loadFromCDN() {
     triedCDN = true;
-    img.src = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@dev/examples/textures/planets/earth_atmos_2048.jpg";
+    img.src = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/textures/planets/earth_atmos_2048.jpg";
   }
   loadFromRepo();
 
   function rebuildSphere() {
     var S = Math.max(64, Math.min(1024, Math.round(R * 2 * DPR)));
     if (sphereC.width === S && pixLon) return; // stessa risoluzione: niente da rifare
-    sphereC.width = sphereC.height = S;
-    sphereX = sphereC.getContext("2d");
-    sphereImg = sphereX.createImageData(S, S);
+    var nc = document.createElement("canvas");
+    nc.width = nc.height = S;
+    var nx2 = nc.getContext("2d");
+    var nimg = nx2.createImageData(S, S);
     var lon = new Float32Array(S * S), v = new Uint16Array(S * S),
         sh = new Float32Array(S * S), idx = new Uint32Array(S * S);
     var n = 0, rr = (S / 2) * (S / 2);
@@ -116,6 +117,8 @@
       }
     }
     pixLon = lon; pixV = v; pixShade = sh; pixIdx = idx; pixCount = n;
+    sphereC = nc; sphereX = nx2; sphereImg = nimg;
+    texDirty = true; // riempi al prossimo frame: mai un frame con la sfera vuota
   }
 
   var texDirty = true;
