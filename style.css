@@ -1488,3 +1488,63 @@ article.digest-body blockquote {
   display: block;
   margin: 0 0 .6rem
 }
+
+/* ---------- Selected works: schede ---------- */
+.wcards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line)
+}
+
+.wcard {
+  background: var(--bg);
+  padding: 2rem 1.6rem 2.6rem;
+  color: inherit;
+  text-decoration: none;
+  transition: background .3s;
+  position: relative;
+  display: block
+}
+
+.wcard:hover {
+  background: var(--bg2)
+}
+
+.wcard .num {
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--accent);
+  letter-spacing: .2em
+}
+
+.wcard h3 {
+  margin: 1.1rem 0 .8rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  transition: color .25s
+}
+
+.wcard:hover h3 {
+  color: var(--accent)
+}
+
+.wcard p {
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.65
+}
+
+.wcard .tag {
+  position: absolute;
+  left: 1.6rem;
+  bottom: 1.5rem;
+  font-family: var(--mono);
+  font-size: .7rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap
+}
