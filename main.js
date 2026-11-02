@@ -10,6 +10,7 @@
   var sphereX = sphereC.getContext("2d");
   var sphereImg = null, pixLon = null, pixV = null, pixShade = null, pixIdx = null, pixCount = 0;
   var frame = 0;
+  var TW = 2048, TH = 1024, TWm = TW - 1, THm = TH - 1;
 
   var _rsT = 0, _rsFirst = true;
   function scheduleSphere() {
@@ -42,7 +43,6 @@
   }
 
   // ---------- texture della Terra (repo base64, fallback CDN NASA) ----------
-  var TW = 2048, TH = 1024, TWm = TW - 1, THm = TH - 1;
   var tex = { ready: false, data: null, lum: null };
   var img = new Image();
   var triedCDN = false;
