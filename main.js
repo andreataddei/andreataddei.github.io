@@ -528,7 +528,28 @@ if (_sent && new URLSearchParams(window.location.search).get("sent") === "1") {
         var next = doc.querySelector("nav + .wrap");
         var cur = mainWrap();
         if (!next || !cur) { location.href = path; return; }
+        var ft = document.querySelector("footer");
+        var ftTop = null;
+        if (ft && !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
+          ftTop = ft.getBoundingClientRect().top; // FLIP: posizione Y prima dello swap
+        }
         cur.replaceWith(document.importNode(next, true));
+        if (ft && ftTop !== null) {
+          var dy = ftTop - ft.getBoundingClientRect().top;
+          if (Math.abs(dy) > 2) {
+            ft.style.transition = "none";
+            ft.style.transform = "translateY(" + dy + "px)"; // dov'era prima
+            void ft.offsetHeight;
+            ft.style.transition = "transform .55s cubic-bezier(.22,1,.36,1)";
+            ft.style.transform = ""; // scivola nella nuova posizione
+            ft.addEventListener("transitionend", function h(ev) {
+              if (ev.target === ft && ev.propertyName === "transform") {
+                ft.style.transition = "";
+                ft.removeEventListener("transitionend", h);
+              }
+            });
+          }
+        }
         document.title = doc.title;
         var meta = doc.querySelector('meta[name="description"]');
         var curMeta = document.querySelector('meta[name="description"]');
