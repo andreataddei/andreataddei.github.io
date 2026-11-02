@@ -1465,3 +1465,26 @@ article.digest-body blockquote {
     gap: .5rem
   }
 }
+
+/* ---------- fix downlink: plink generico + back link ---------- */
+.plink {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: .75rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--fg);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: .3rem;
+  transition: color .25s
+}
+
+.plink:hover {
+  color: var(--accent)
+}
+
+.digest-back {
+  display: block;
+  margin: 0 0 .6rem
+}
