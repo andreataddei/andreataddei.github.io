@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Google Rolls Back Satellite Image AI Tool — Downlink — Andrea Taddei</title>
+<meta name="description" content="After tests produced false depictions of explosions, Google rolled back its Earth image-generation feature. Trust in overhead imagery is now a design constraint." />
+<link rel="canonical" href="https://andreataddei.github.io/blog/2026-08-03-google-rolls-back-satellite-image-ai-tool.html" />
+<link rel="stylesheet" href="../style.css?v=2026-11-06a">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+</head>
+<body>
+
+<canvas id="orbit"></canvas>
+<nav>
+  <div class="wrap">
+    <a class="brand" href="../index.html" aria-label="Andrea Taddei — home"><svg class="brand-logo" viewBox="99.4 77.4 379.2 379.2" width="26" height="26" role="img" aria-hidden="true">
+    <defs>
+      <linearGradient id="lg-a" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#F58AF4"/><stop offset="0.34" stop-color="#C99BFF"/><stop offset="0.62" stop-color="#75C9FF"/><stop offset="1" stop-color="#38E8D0"/>
+      </linearGradient>
+      <linearGradient id="lg-b" x1="0" y1="0" x2="1" y2="0.9">
+        <stop offset="0" stop-color="#F58AF4"/><stop offset="0.48" stop-color="#C69CFF"/><stop offset="1" stop-color="#62D9F5"/>
+      </linearGradient>
+    </defs>
+    <path fill="url(#lg-a)" d="M288 103 C280 103 273 107 269 115 L200 236 C194 247 201 261 214 261 L245 261 C252 261 258 257 262 250 L278 219 C283 209 295 209 301 219 L380 357 C386 367 380 369 373 369 L241 369 C234 369 229 373 225 380 L204 411 C198 421 205 431 217 431 L461 431 C475 431 483 417 476 405 L307 115 C303 107 296 103 288 103 Z"/>
+    <path fill="url(#lg-b)" d="M177 284 C167 284 158 290 153 300 L101 410 C96 420 103 431 115 431 L145 431 C153 431 159 426 163 419 L202 348 C205 342 211 339 218 339 L317 339 C329 339 333 325 326 316 L309 293 C305 287 299 284 292 284 Z"/>
+  </svg></a>
+    <ul>
+      <li><a href="../focus.html">Focus</a></li>
+      <li><a href="../downlink.html">Downlink</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="page-head">
+    <a class="digest-back rv" href="../downlink.html">← Downlink</a>
+    <span class="num rv">3 Aug 2026 · TechXplore</span>
+    <h1 class="rv">Google Rolls Back Satellite Image AI Tool</h1>
+  </header>
+
+  <div class="digest-meta rv">
+    <span>3 Aug 2026</span>
+    <span>Source: <a href="https://techxplore.com/news/2026-08-google-satellite-image-ai-tool.html" target="_blank" rel="noopener">TechXplore</a></span>
+    <span>EO · AI · Media</span>
+  </div>
+
+  <article class="digest-body rv">
+    <p>The rollback that began with a one-day pause became a decision. Google <a href="https://techxplore.com/news/2026-08-google-satellite-image-ai-tool.html" target="_blank" rel="noopener">rolled back its Google Earth AI image-generation tool after backlash</a> — tests had produced false depictions of explosions, and the critiques piled up from exactly the communities whose trust satellite imagery depends on: journalists, researchers and OSINT analysts.</p>
+<p>As one analyst quoted in the coverage put it, such fakes "erode public trust in satellite imagery, and make the jobs of journalists and researchers more difficult." That sentence deserves engineering attention, because it treats trust as a system property — something a feature can silently spend, not just a sentiment. Early in the U.S. war with Iran, an AI-altered satellite image of a destroyed military base garnered millions of views; the tool briefly made that capability free, instant and unattributed for any location on the planet.</p>
+<p>What makes the episode genuinely instructive is the failure mode: nothing "broke." The model worked as designed; the harms were emergent from a design that ignored the evidentiary role of the format it was remixing. Satellite images are not a creative medium. They are the raw material of accountability — war-crime documentation, disaster verification, environmental enforcement. A "generate satellite image" button treats a witness as a canvas.</p>
+<p>The industry takeaway: provenance must be designed into generative systems that touch evidentiary data — cryptographic content credentials, invisible watermarks that survive processing, generation logs, and interfaces that label synthetic imagery as synthetic at the moment of creation, not after circulation.</p>
+<p>Google's rollback is the responsible call, and hopefully a precedent: when a capability collides with a truth infrastructure, the capability waits. The sky's credibility is worth more than any single feature's engagement metrics.</p>
+  </article>
+
+  <hr style="border:none;border-top:1px solid var(--line);margin:3rem 0" />
+
+  <p class="rv" style="margin:0 0 3rem"><a class="plink" href="https://techxplore.com/news/2026-08-google-satellite-image-ai-tool.html" target="_blank" rel="noopener">Read the original →</a></p>
+
+</div>
+
+<footer class="rv">
+  <div class="wrap">
+    <span>© <span id="year"></span> ANDREA TADDEI</span>
+  </div>
+</footer>
+
+<script src="../main.js?v=2026-11-06a"></script>
+</body>
+</html>
