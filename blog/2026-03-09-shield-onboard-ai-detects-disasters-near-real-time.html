@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Onboard AI Detects Disasters in Near Real Time — Downlink — Andrea Taddei</title>
+<meta name="description" content="The Shield framework runs disaster detection in orbit, cutting data transmission and turning satellites into first responders." />
+<link rel="canonical" href="https://andreataddei.github.io/blog/2026-03-09-shield-onboard-ai-detects-disasters-near-real-time.html" />
+<link rel="stylesheet" href="../style.css?v=2026-11-06a">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+</head>
+<body>
+
+<canvas id="orbit"></canvas>
+<nav>
+  <div class="wrap">
+    <a class="brand" href="../index.html" aria-label="Andrea Taddei — home"><svg class="brand-logo" viewBox="99.4 77.4 379.2 379.2" width="26" height="26" role="img" aria-hidden="true">
+    <defs>
+      <linearGradient id="lg-a" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#F58AF4"/><stop offset="0.34" stop-color="#C99BFF"/><stop offset="0.62" stop-color="#75C9FF"/><stop offset="1" stop-color="#38E8D0"/>
+      </linearGradient>
+      <linearGradient id="lg-b" x1="0" y1="0" x2="1" y2="0.9">
+        <stop offset="0" stop-color="#F58AF4"/><stop offset="0.48" stop-color="#C69CFF"/><stop offset="1" stop-color="#62D9F5"/>
+      </linearGradient>
+    </defs>
+    <path fill="url(#lg-a)" d="M288 103 C280 103 273 107 269 115 L200 236 C194 247 201 261 214 261 L245 261 C252 261 258 257 262 250 L278 219 C283 209 295 209 301 219 L380 357 C386 367 380 369 373 369 L241 369 C234 369 229 373 225 380 L204 411 C198 421 205 431 217 431 L461 431 C475 431 483 417 476 405 L307 115 C303 107 296 103 288 103 Z"/>
+    <path fill="url(#lg-b)" d="M177 284 C167 284 158 290 153 300 L101 410 C96 420 103 431 115 431 L145 431 C153 431 159 426 163 419 L202 348 C205 342 211 339 218 339 L317 339 C329 339 333 325 326 316 L309 293 C305 287 299 284 292 284 Z"/>
+  </svg></a>
+    <ul>
+      <li><a href="../focus.html">Focus</a></li>
+      <li><a href="../downlink.html">Downlink</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="page-head">
+    <a class="digest-back rv" href="../downlink.html">← Downlink</a>
+    <span class="num rv">9 Mar 2026 · Newswise</span>
+    <h1 class="rv">Onboard AI Detects Disasters in Near Real Time</h1>
+  </header>
+
+  <div class="digest-meta rv">
+    <span>9 Mar 2026</span>
+    <span>Source: <a href="https://www.newswise.com/articles/new-satellite-ai-detects-disasters-in-near-real-time" target="_blank" rel="noopener">Newswise</a></span>
+    <span>EO · AI</span>
+  </div>
+
+  <article class="digest-body rv">
+    <p>The blunt constraint of disaster response from space has always been bandwidth. A satellite photographs everything, but only a fraction of the data can reach the ground, so a wildfire or a flood keeps burning while raw imagery waits in a downlink queue. The <a href="https://www.newswise.com/articles/new-satellite-ai-detects-disasters-in-near-real-time" target="_blank" rel="noopener">Shield framework</a>, reported in March, attacks exactly that constraint: it runs disaster detection on the satellite itself, enabling near-real-time alerts from orbit.</p>
+<p>The engineering logic is compelling. Instead of transmitting every image and processing it on the ground, the spacecraft classifies what it sees as it sees it and sends only detections and compressed products. The method reduces data transmission needs dramatically — which, on an EO platform, translates directly into latency, power and cost savings. The satellite stops being a camera with a modem and becomes an analyst with an antenna.</p>
+<p>For disaster response the numbers that matter are minutes. A flood extent map delivered in near real time changes evacuation decisions; the same map delivered twelve hours later changes only the paperwork. Onboard detection collapses the pipeline: no downlink window to wait for, no ground-station pass to schedule, no processing backlog to clear. When the event moves faster than the revisit, the processing must ride along with the orbit.</p>
+<p>The framework's authors argue it could significantly enhance next-generation Earth observation satellites — and that is the right scale to think about. This is not one instrument doing a trick; it is a design pattern for the next generation of constellations: smaller payloads, smarter software, and value delivered as insight rather than as pixels.</p>
+<p>The hopeful version of this story is concrete. Fires caught at ignition instead of at perimeter. Floods mapped while the water is still rising. The satellite overhead not merely recording the disaster but reporting it — to the people who can still do something about it.</p>
+  </article>
+
+  <hr style="border:none;border-top:1px solid var(--line);margin:3rem 0" />
+
+  <p class="rv" style="margin:0 0 3rem"><a class="plink" href="https://www.newswise.com/articles/new-satellite-ai-detects-disasters-in-near-real-time" target="_blank" rel="noopener">Read the original →</a></p>
+
+</div>
+
+<footer class="rv">
+  <div class="wrap">
+    <span>© <span id="year"></span> ANDREA TADDEI</span>
+  </div>
+</footer>
+
+<script src="../main.js?v=2026-11-06a"></script>
+</body>
+</html>
