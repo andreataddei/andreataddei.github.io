@@ -499,6 +499,35 @@ if (_sent && new URLSearchParams(window.location.search).get("sent") === "1") {
   _sent.classList.add("on");
 }
 
+// ---------- form contatti: invio AJAX a Formspree, redirect alla thank-you page ----------
+// Il redirect _next e' una feature dei piani a pagamento: sul free l'invio via fetch
+// (endpoint JSON) non reindirizza, quindi portiamo l'utente noi sulla nostra pagina.
+(function () {
+  if (!window.fetch) return; // senza JS: POST classico, la thank-you page di Formspree
+  var busy = false;
+  document.addEventListener("submit", function (e) {
+    var f = e.target;
+    if (!f || f.id !== "cform") return;
+    if (busy) { e.preventDefault(); return; }
+    busy = true;
+    e.preventDefault();
+    var btn = f.querySelector("button");
+    if (btn) btn.disabled = true;
+    fetch(f.getAttribute("action"), {
+      method: "POST",
+      body: new FormData(f),
+      headers: { "Accept": "application/json" }
+    }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      location.href = "/thank-you.html";
+    }).catch(function () {
+      busy = false;
+      if (btn) btn.disabled = false;
+      f.submit(); // fallback: POST classico verso Formspree
+    });
+  });
+})();
+
 // ---------- navigazione SPA: il canvas resta vivo tra le pagine ----------
 (function () {
   if (!window.fetch || !window.DOMParser || !window.history || !history.pushState) return;
