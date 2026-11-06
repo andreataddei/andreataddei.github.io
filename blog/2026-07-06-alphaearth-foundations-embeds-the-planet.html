@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AlphaEarth Foundations Embeds the Planet — Downlink — Andrea Taddei</title>
+<meta name="description" content="A new AI model compresses petabytes of Earth observation into a unified embedding dataset — 1.4 trillion footprints a year, 16x smaller than rivals." />
+<link rel="canonical" href="https://andreataddei.github.io/blog/2026-07-06-alphaearth-foundations-embeds-the-planet.html" />
+<link rel="stylesheet" href="../style.css?v=2026-11-06a">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg" />
+</head>
+<body>
+
+<canvas id="orbit"></canvas>
+<nav>
+  <div class="wrap">
+    <a class="brand" href="../index.html" aria-label="Andrea Taddei — home"><svg class="brand-logo" viewBox="99.4 77.4 379.2 379.2" width="26" height="26" role="img" aria-hidden="true">
+    <defs>
+      <linearGradient id="lg-a" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#F58AF4"/><stop offset="0.34" stop-color="#C99BFF"/><stop offset="0.62" stop-color="#75C9FF"/><stop offset="1" stop-color="#38E8D0"/>
+      </linearGradient>
+      <linearGradient id="lg-b" x1="0" y1="0" x2="1" y2="0.9">
+        <stop offset="0" stop-color="#F58AF4"/><stop offset="0.48" stop-color="#C69CFF"/><stop offset="1" stop-color="#62D9F5"/>
+      </linearGradient>
+    </defs>
+    <path fill="url(#lg-a)" d="M288 103 C280 103 273 107 269 115 L200 236 C194 247 201 261 214 261 L245 261 C252 261 258 257 262 250 L278 219 C283 209 295 209 301 219 L380 357 C386 367 380 369 373 369 L241 369 C234 369 229 373 225 380 L204 411 C198 421 205 431 217 431 L461 431 C475 431 483 417 476 405 L307 115 C303 107 296 103 288 103 Z"/>
+    <path fill="url(#lg-b)" d="M177 284 C167 284 158 290 153 300 L101 410 C96 420 103 431 115 431 L145 431 C153 431 159 426 163 419 L202 348 C205 342 211 339 218 339 L317 339 C329 339 333 325 326 316 L309 293 C305 287 299 284 292 284 Z"/>
+  </svg></a>
+    <ul>
+      <li><a href="../focus.html">Focus</a></li>
+      <li><a href="../downlink.html">Downlink</a></li>
+      <li><a href="../contact.html">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="page-head">
+    <a class="digest-back rv" href="../downlink.html">← Downlink</a>
+    <span class="num rv">6 Jul 2026 · Google DeepMind</span>
+    <h1 class="rv">AlphaEarth Foundations Embeds the Planet</h1>
+  </header>
+
+  <div class="digest-meta rv">
+    <span>6 Jul 2026</span>
+    <span>Source: <a href="https://deepmind.google/blog/alphaearth-foundations-helps-map-our-planet-in-unprecedented-detail/" target="_blank" rel="noopener">Google DeepMind</a></span>
+    <span>EO · AI</span>
+  </div>
+
+  <article class="digest-body rv">
+    <p>Every day, satellites capture the planet in overwhelming detail — and the problem has become connecting those disparate datasets and using them all efficiently. Google DeepMind's answer, <a href="https://deepmind.google/blog/alphaearth-foundations-helps-map-our-planet-in-unprecedented-detail/" target="_blank" rel="noopener">AlphaEarth Foundations</a>, is a new AI model that integrates petabytes of Earth observation data into a unified representation, now available as the Satellite Embedding dataset in Google Earth Engine — one of the largest of its kind, with over 1.4 trillion embedding footprints per year.</p>
+<p>The technical idea is the foundation-model playbook applied to the planet. Instead of storing images, the model stores learned representations: for every patch of Earth, a vector that encodes what is there, how it relates to everything else, and how it changes. Those summaries require 16 times less storage than the outputs of other AI systems DeepMind tested, which is the number that makes planetary-scale analysis affordable rather than aspirational.</p>
+<p>Why embeddings change the economics: raw EO data is too big to move and too varied to join — optical from one constellation, radar from another, each with its own geometry and quirks. A shared embedding space turns "find me all the informal settlements that expanded near floodplains in the last three years" from a multi-month data-engineering project into a nearest-neighbor query.</p>
+<p>The unification is the revolution quietly announced here. Global mapping and monitoring stop being a collection of per-sensor pipelines and become a single, queryable representation of the surface of the Earth — refreshed continuously, comparable across years, and accessible to researchers who never managed a petabyte cluster.</p>
+<p>The public-interest case writes itself: deforestation detected by change in embedding space rather than by hand-labeled polygons, urban growth measured consistently across continents, climate variables inferred where instruments are sparse. The archive we spent decades collecting finally gets an index — and the index is small enough to fit in the same public cloud where the pixels live.</p>
+  </article>
+
+  <hr style="border:none;border-top:1px solid var(--line);margin:3rem 0" />
+
+  <p class="rv" style="margin:0 0 3rem"><a class="plink" href="https://deepmind.google/blog/alphaearth-foundations-helps-map-our-planet-in-unprecedented-detail/" target="_blank" rel="noopener">Read the original →</a></p>
+
+</div>
+
+<footer class="rv">
+  <div class="wrap">
+    <span>© <span id="year"></span> ANDREA TADDEI</span>
+  </div>
+</footer>
+
+<script src="../main.js?v=2026-11-06a"></script>
+</body>
+</html>
