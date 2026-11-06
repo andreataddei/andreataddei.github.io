@@ -1548,3 +1548,16 @@ article.digest-body blockquote {
   color: var(--accent);
   white-space: nowrap
 }
+
+
+/* ---------- fix downlink: link inline nel corpo dei digest ---------- */
+article.digest-body a {
+  color: var(--fg);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  transition: color .25s
+}
+
+article.digest-body a:hover {
+  color: var(--accent)
+}
