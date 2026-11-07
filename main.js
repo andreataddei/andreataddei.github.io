@@ -588,6 +588,7 @@ if (_sent && new URLSearchParams(window.location.search).get("sent") === "1") {
         window.scrollTo(0, 0);
         window.observeRv(mainWrap());
         window.initLexicon && window.initLexicon();
+        window.initStory && window.initStory();
         var sent = document.getElementById("sent");
         if (sent && new URLSearchParams(new URL(path, location.href).search).get("sent") === "1") {
           sent.classList.add("on");
@@ -739,3 +740,105 @@ window.initLexicon = function () {
   }
 };
 window.initLexicon();
+
+// ---------- Story: timeline AI (initStory gira al load e a ogni swap SPA) ----------
+// I dati (101 momenti, 6 ere) stanno in story-data.js e vengono caricati solo
+// quando serve, come per il Lexicon.
+window.initStory = function () {
+  var app = document.getElementById("stEras");
+  if (!app || app.dataset.stReady) return;
+  app.dataset.stReady = "1";
+
+  function build() {
+    var D = window.STORY_DATA;
+    var nav = document.getElementById("stEraNav"),
+        countEl = document.getElementById("stCount"),
+        emptyEl = document.getElementById("stEmpty"),
+        searchEl = document.getElementById("stSearch");
+    var active = {}, q = "";
+    Object.keys(D.TYPES).forEach(function (k) { active[k] = true; });
+
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+    function hi(t) {
+      if (!q) return esc(t);
+      var i = t.toLowerCase().indexOf(q);
+      if (i < 0) return esc(t);
+      return esc(t.slice(0, i)) + "<mark>" + esc(t.slice(i, i + q.length)) + "</mark>" + esc(t.slice(i + q.length));
+    }
+
+    function render() {
+      var total = 0, html = "", visible = {};
+      D.ERAS.forEach(function (e) {
+        var items = (D.DATA[e.id] || []).filter(function (m) {
+          return active[m[1]] && (!q || (m[2] + " " + m[3] + " " + m[1]).toLowerCase().indexOf(q) !== -1);
+        });
+        visible[e.id] = items.length;
+        total += items.length;
+        if (!items.length) return;
+        html += '<section class="st-era" id="' + e.id + '">' +
+          '<div class="st-era-years" style="color:' + e.color + '">' + e.years + '</div>' +
+          '<h2>' + esc(e.name) + '</h2><p>' + esc(e.desc) + '</p>' +
+          '<div class="st-timeline">' +
+          items.map(function (m) {
+            var c = D.TYPES[m[1]].color;
+            return '<div class="st-item" style="--tc:' + c + '"><div class="st-card">' +
+              '<div class="st-meta"><span class="yr">' + m[0] + '</span><span class="ty">' + D.TYPES[m[1]].label + '</span></div>' +
+              '<h3>' + hi(m[2]) + '</h3><p>' + esc(m[3]) + '</p></div></div>';
+          }).join("") + '</div></section>';
+      });
+      app.innerHTML = html;
+      emptyEl.style.display = total ? "none" : "block";
+      countEl.textContent = total + " of 101 moments";
+      nav.innerHTML = D.ERAS.map(function (e) {
+        return '<button data-era="' + e.id + '" style="--ec:' + e.color + '"' + (visible[e.id] ? "" : ' class="dim"') +
+          ' type="button"><span class="dot"></span>' + esc(e.name) + ' <span class="yrs">' + e.years + '</span></button>';
+      }).join("");
+    }
+
+    nav.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("button[data-era]") : null;
+      if (!b) return;
+      var sec = document.getElementById(b.dataset.era);
+      if (!sec) return;
+      var c = document.querySelector(".st-controls");
+      var off = (c ? c.getBoundingClientRect().bottom : 60) + 24;
+      window.scrollTo({
+        top: sec.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - off,
+        behavior: "smooth"
+      });
+    });
+    document.querySelectorAll("#stFilters .fbtn[data-f]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        b.classList.toggle("active");
+        active[b.dataset.f] = b.classList.contains("active");
+        render();
+      });
+    });
+    document.getElementById("stReset").addEventListener("click", function () {
+      Object.keys(D.TYPES).forEach(function (k) { active[k] = true; });
+      q = "";
+      searchEl.value = "";
+      document.querySelectorAll("#stFilters .fbtn[data-f]").forEach(function (b) { b.classList.add("active"); });
+      render();
+    });
+    var deb = null;
+    searchEl.addEventListener("input", function () {
+      clearTimeout(deb);
+      deb = setTimeout(function () { q = searchEl.value.trim().toLowerCase(); render(); }, 120);
+    });
+    render();
+  }
+
+  if (window.STORY_DATA) { build(); return; }
+  var s = document.createElement("script");
+  s.src = "/story-data.js?v=1";
+  s.onload = build;
+  s.onerror = function () {
+    var e = document.getElementById("stEmpty");
+    if (e) { e.textContent = "Could not load the story data."; e.style.display = "block"; }
+  };
+  document.head.appendChild(s);
+};
+window.initStory();
