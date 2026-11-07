@@ -58,20 +58,33 @@
       for (var i = 0, p = 0; i < lum.length; i++, p += 4) {
         lum[i] = (d[p] * 77 + d[p + 1] * 151 + d[p + 2] * 28) >> 8;
       }
+      // blur 3x3 separabile (orizzontale + verticale = stessa media dei 9 vicini,
+      // 6 letture invece di 9) e a blocchi di righe via setTimeout: niente long task
       var blur = new Uint8Array(TW * TH);
-      for (var y = 0; y < TH; y++) {
-        var yu = y > 0 ? y - 1 : 0, yd = y < THm ? y + 1 : THm;
-        for (var xx = 0; xx < TW; xx++) {
-          var xl = xx > 0 ? xx - 1 : 0, xr = xx < TWm ? xx + 1 : TWm;
-          blur[y * TW + xx] = (
-            lum[yu * TW + xl] + lum[yu * TW + xx] + lum[yu * TW + xr] +
-            lum[y * TW + xl] + lum[y * TW + xx] + lum[y * TW + xr] +
-            lum[yd * TW + xl] + lum[yd * TW + xx] + lum[yd * TW + xr]) / 9;
+      var tmp = new Uint8Array(TW * TH);
+      var by = 0, pass = 0;
+      function blurStep() {
+        var end = Math.min(TH, by + 128);
+        for (; by < end; by++) {
+          var yu = by > 0 ? by - 1 : 0, yd = by < THm ? by + 1 : THm;
+          var ro = by * TW, ru = yu * TW, rd = yd * TW;
+          for (var xx = 0; xx < TW; xx++) {
+            var xl = xx > 0 ? xx - 1 : 0, xr = xx < TWm ? xx + 1 : TWm;
+            if (pass === 0) {
+              tmp[ro + xx] = (lum[ro + xl] + lum[ro + xx] + lum[ro + xr]) / 3;
+            } else {
+              blur[ro + xx] = (tmp[ru + xx] + tmp[ro + xx] + tmp[rd + xx]) / 3;
+            }
+          }
         }
+        if (by < TH) { setTimeout(blurStep, 0); return; }
+        by = 0; pass++;
+        if (pass === 1) { setTimeout(blurStep, 0); return; }
+        tex.data = d; tex.lum = blur;
+        tex.ready = true;
+        rebuildSphere();
       }
-      tex.data = d; tex.lum = blur;
-      tex.ready = true;
-      rebuildSphere();
+      blurStep();
     } catch (e) { /* resta il fallback */ }
   }
 
@@ -93,7 +106,7 @@
   loadFromRepo();
 
   function rebuildSphere() {
-    var S = Math.max(64, Math.min(1024, Math.round(R * 2 * DPR)));
+    var S = Math.max(64, Math.min(768, Math.round(R * 2 * DPR)));
     if (sphereC.width === S && pixLon) return; // stessa risoluzione: niente da rifare
     var nc = document.createElement("canvas");
     nc.width = nc.height = S;
@@ -126,7 +139,7 @@
   function drawPlanet() {
     if (tex.ready && sphereImg) {
       frame++;
-      if (texDirty || frame % 4 === 0) {
+      if (texDirty || frame % 6 === 0) {
         texDirty = false;
         var d = sphereImg.data, td = tex.data, lum = tex.lum;
         var TWO = Math.PI * 2, K = 2.0;
@@ -254,15 +267,18 @@
 
   function drawSky(drift, tick) {
     // fondo: stelle fiole di campo, dense ma discrete
+    // (fillStyle fisso + globalAlpha: niente stringhe ricomposte per stella/frame)
+    x.fillStyle = "#f4f4f2";
     for (var s2 = 0; s2 < 160; s2++) {
       var hx = (((s2 * 137.5077) % W) + drift * 0.5) % W;
       var hy = (s2 * 89.7233) % H;
       var tw = 0.35 + 0.25 * Math.sin(tick * 0.03 + s2 * 1.7);
-      x.fillStyle = "rgba(244,244,242," + tw.toFixed(3) + ")";
+      x.globalAlpha = tw;
       var sz = s2 % 11 === 0 ? 1.4 : 0.8;
       x.fillRect(hx, hy, sz, sz);
       x.fillRect((hx + W / 2) % W, (hy + H * 0.37) % H, 0.8, 0.8);
     }
+    x.globalAlpha = 1;
     // stelle e costellazioni vere, con doppio disegno per la continuita' orizzontale
     for (var pass = 0; pass < 2; pass++) {
       var shift = pass * W * 2;
@@ -281,12 +297,13 @@
           var tw2 = 0.75 + 0.25 * Math.sin(tick * 0.045 + si * 2.3 + ci);
           // alone tenue per le stelle piu' brillanti
           if (mag < 1.3) {
-            x.fillStyle = "rgba(244,244,242," + (0.10 * tw2).toFixed(3) + ")";
+            x.globalAlpha = 0.10 * tw2;
             x.beginPath(); x.arc(px, py, rad * 3.2, 0, Math.PI * 2); x.fill();
           }
-          x.fillStyle = "rgba(244,244,242," + (0.95 * tw2).toFixed(3) + ")";
+          x.globalAlpha = 0.95 * tw2;
           x.beginPath(); x.arc(px, py, rad, 0, Math.PI * 2); x.fill();
         }
+        x.globalAlpha = 1;
         // linee della costellazione
         x.strokeStyle = "rgba(111,140,255,0.22)";
         x.lineWidth = 1;
