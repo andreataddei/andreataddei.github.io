@@ -1561,3 +1561,241 @@ article.digest-body a {
 article.digest-body a:hover {
   color: var(--accent)
 }
+/* ---------- Lexicon ---------- */
+.lex-controls {
+  position: sticky;
+  top: 3.6rem;
+  z-index: 15;
+  backdrop-filter: blur(10px);
+  background: rgba(6,6,7,.78);
+  border-bottom: 1px solid var(--line);
+  padding: 1rem 0 .9rem;
+  margin: 0 0 2rem
+}
+
+.lex-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  align-items: center
+}
+
+.lex-row + .lex-row {
+  margin-top: .6rem
+}
+
+#lexSearch {
+  flex: 1 1 220px;
+  max-width: 340px;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--fg);
+  font: inherit;
+  font-size: .92rem;
+  padding: .6rem .9rem;
+  border-radius: 2px;
+  outline: none;
+  transition: border-color .25s
+}
+
+#lexSearch:focus {
+  border-color: var(--accent)
+}
+
+.lex-controls select {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: .74rem;
+  letter-spacing: .05em;
+  padding: .62rem .8rem;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer
+}
+
+.lex-controls select option {
+  background: #0a0a0c;
+  color: var(--fg)
+}
+
+.fbtn {
+  font-family: var(--mono);
+  font-size: .7rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: .45rem .95rem;
+  cursor: pointer;
+  transition: color .25s, border-color .25s
+}
+
+.fbtn:hover {
+  color: var(--fg);
+  border-color: var(--accent)
+}
+
+.fbtn.active {
+  color: var(--fg);
+  border-color: currentColor
+}
+
+.fbtn.lv[data-l="Beginner"].active {
+  color: #62d9f5
+}
+
+.fbtn.lv[data-l="Advanced"].active {
+  color: #6f8cff
+}
+
+.fbtn.lv[data-l="Expert"].active {
+  color: #c99bff
+}
+
+.fbtn.reset {
+  border-style: dashed
+}
+
+.lex-count {
+  font-family: var(--mono);
+  font-size: .72rem;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin-left: auto;
+  white-space: nowrap
+}
+
+.az {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .15rem;
+  margin-top: .7rem
+}
+
+.az a {
+  font-family: var(--mono);
+  font-size: .68rem;
+  color: var(--accent);
+  text-decoration: none;
+  padding: .15rem .4rem;
+  border-radius: 2px
+}
+
+.az a:hover {
+  background: var(--bg2);
+  color: var(--fg)
+}
+
+.az a.dim {
+  color: rgba(244,244,242,.16);
+  pointer-events: none
+}
+
+.lex-list {
+  display: flex;
+  flex-direction: column
+}
+
+.lex-empty {
+  display: none;
+  color: var(--muted);
+  padding: 3rem 0;
+  text-align: center;
+  font-size: .92rem
+}
+
+.letter-head {
+  font-family: var(--mono);
+  font-size: .78rem;
+  letter-spacing: .2em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin: 2.8rem 0 .2rem;
+  padding-bottom: .55rem;
+  border-bottom: 1px solid var(--line);
+  scroll-margin-top: 12rem
+}
+
+.letter-head:first-child {
+  margin-top: 0
+}
+
+.term {
+  display: grid;
+  grid-template-columns: 4rem 1fr auto;
+  gap: 1.5rem;
+  align-items: baseline;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--line);
+  transition: padding-left .3s
+}
+
+.term:hover {
+  padding-left: .8rem
+}
+
+.term .yr {
+  font-family: var(--mono);
+  font-size: .75rem;
+  color: var(--muted)
+}
+
+.term h3 {
+  font-size: 1.1rem;
+  font-weight: 600
+}
+
+.term h3 mark {
+  background: rgba(111,140,255,.28);
+  color: var(--fg);
+  border-radius: 2px;
+  padding: 0 2px
+}
+
+.term .topic {
+  display: block;
+  font-family: var(--mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: .5rem
+}
+
+.term p {
+  color: var(--muted);
+  font-size: .88rem;
+  margin-top: .45rem;
+  line-height: 1.6;
+  max-width: 46rem
+}
+
+.term .lv {
+  font-family: var(--mono);
+  font-size: .62rem;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--lc, var(--accent));
+  border: 1px solid var(--lc, var(--accent));
+  padding: .28rem .7rem;
+  border-radius: 999px;
+  white-space: nowrap
+}
+
+@media (max-width: 760px) {
+  .term {
+    grid-template-columns: 1fr;
+    gap: .35rem
+  }
+
+  .term .lv {
+    justify-self: start;
+    margin-top: .3rem
+  }
+
+}

@@ -587,6 +587,7 @@ if (_sent && new URLSearchParams(window.location.search).get("sent") === "1") {
         updateNav(new URL(path, location.href).pathname);
         window.scrollTo(0, 0);
         window.observeRv(mainWrap());
+        window.initLexicon && window.initLexicon();
         var sent = document.getElementById("sent");
         if (sent && new URLSearchParams(new URL(path, location.href).search).get("sent") === "1") {
           sent.classList.add("on");
@@ -613,3 +614,115 @@ if (_sent && new URLSearchParams(window.location.search).get("sent") === "1") {
     swapTo(location.pathname + location.search, false);
   });
 })();
+// ---------- Lexicon: pagina AI Lexicon (initLexicon gira al load e a ogni swap SPA) ----------
+// I dati (904 termini) stanno in lexicon-data.js e vengono caricati solo quando
+// serve: la pagina pesa poco anche navigando via SPA, e main.js resta snello.
+window.initLexicon = function () {
+  var root = document.getElementById("lexList");
+  if (!root || root.dataset.lexReady) return;
+  root.dataset.lexReady = "1";
+
+  function build() {
+    var D = window.LEXICON_DATA;
+    var LV = { Beginner: "#62d9f5", Advanced: "#6f8cff", Expert: "#c99bff" };
+    var azEl = document.getElementById("lexAz"),
+        countEl = document.getElementById("lexCount"),
+        emptyEl = document.getElementById("lexEmpty"),
+        searchEl = document.getElementById("lexSearch"),
+        topicSel = document.getElementById("lexTopic"),
+        sortSel = document.getElementById("lexSort");
+    var activeLv = { Beginner: true, Advanced: true, Expert: true };
+    var q = "", topic = "", sort = "az";
+
+    D.topics.forEach(function (t) {
+      var o = document.createElement("option");
+      o.value = t; o.textContent = t; topicSel.appendChild(o);
+    });
+
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+    function hi(t) {
+      if (!q) return esc(t);
+      var i = t.toLowerCase().indexOf(q);
+      if (i < 0) return esc(t);
+      return esc(t.slice(0, i)) + "<mark>" + esc(t.slice(i, i + q.length)) + "</mark>" + esc(t.slice(i + q.length));
+    }
+
+    function render() {
+      var items = D.terms.map(function (t, i) { return { t: t, i: i }; }).filter(function (o) {
+        return activeLv[o.t[5]] && (!topic || o.t[4] === topic) &&
+          (!q || (o.t[0] + " " + o.t[1]).toLowerCase().indexOf(q) !== -1);
+      });
+      var lvOrder = { Beginner: 0, Advanced: 1, Expert: 2 };
+      if (sort === "az") items.sort(function (a, b) { return a.t[0].localeCompare(b.t[0]); });
+      else if (sort === "year") items.sort(function (a, b) { return a.t[2] - b.t[2]; });
+      else if (sort === "level") items.sort(function (a, b) { return lvOrder[a.t[5]] - lvOrder[b.t[5]] || a.t[0].localeCompare(b.t[0]); });
+      else items.sort(function (a, b) { return a.t[4].localeCompare(b.t[4]) || a.t[0].localeCompare(b.t[0]); });
+
+      var html = "", curKey = null;
+      var letters = {};
+      items.forEach(function (o) {
+        var t = o.t;
+        var K, id;
+        if (sort === "az") { K = t[0][0].toUpperCase(); id = "L" + K; }
+        else { K = sort === "year" ? t[2] : sort === "level" ? t[5] : t[4]; id = "K" + K; }
+        if (sort === "az") letters[K] = true;
+        if (K !== curKey) { html += '<div class="letter-head" id="' + esc(String(id)) + '">' + esc(String(K)) + "</div>"; curKey = K; }
+        var c = LV[t[5]] || "var(--accent)";
+        html += '<div class="term" style="--lc:' + c + '">' +
+          '<span class="yr">' + t[2] + "</span>" +
+          "<div><h3>" + hi(t[0]) + '</h3><span class="topic">' + esc(t[4]) + "</span><p>" + esc(t[1]) + "</p></div>" +
+          '<span class="lv">' + t[5] + "</span></div>";
+      });
+      root.innerHTML = html;
+      emptyEl.style.display = items.length ? "none" : "block";
+      countEl.textContent = items.length + " / " + D.terms.length + " concepts";
+
+      var AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", azHtml = "";
+      for (var n = 0; n < AZ.length; n++) {
+        azHtml += letters[AZ[n]]
+          ? '<a href="#L' + AZ[n] + '">' + AZ[n] + "</a>"
+          : '<a class="dim">' + AZ[n] + "</a>";
+      }
+      azEl.innerHTML = azHtml;
+    }
+
+    var deb = null;
+    searchEl.addEventListener("input", function () {
+      clearTimeout(deb);
+      deb = setTimeout(function () { q = searchEl.value.trim().toLowerCase(); render(); }, 120);
+    });
+    topicSel.addEventListener("change", function () { topic = topicSel.value; render(); });
+    sortSel.addEventListener("change", function () { sort = sortSel.value; render(); });
+    document.querySelectorAll(".fbtn.lv").forEach(function (b) {
+      b.addEventListener("click", function () {
+        b.classList.toggle("active");
+        activeLv[b.dataset.l] = b.classList.contains("active");
+        render();
+      });
+    });
+    document.getElementById("lexReset").addEventListener("click", function () {
+      activeLv = { Beginner: true, Advanced: true, Expert: true };
+      q = ""; topic = ""; sort = "az";
+      searchEl.value = ""; topicSel.value = ""; sortSel.value = "az";
+      document.querySelectorAll(".fbtn.lv").forEach(function (b) { b.classList.add("active"); });
+      render();
+    });
+    render();
+  }
+
+  if (window.LEXICON_DATA) { build(); return; }
+  var s = document.createElement("script");
+  s.src = "/lexicon-data.js?v=1";
+  s.onload = build;
+  s.onerror = function () {
+    emptyMsg();
+  };
+  document.head.appendChild(s);
+  function emptyMsg() {
+    var e = document.getElementById("lexEmpty");
+    if (e) { e.textContent = "Could not load the lexicon data."; e.style.display = "block"; }
+  }
+};
+window.initLexicon();
