@@ -702,6 +702,19 @@ window.initLexicon = function () {
         render();
       });
     });
+    azEl.addEventListener("click", function (e) {
+      var a = e.target.closest ? e.target.closest("a") : null;
+      if (!a || !a.getAttribute("href") || a.getAttribute("href").charAt(0) !== "#") return;
+      var el = document.getElementById(a.getAttribute("href").slice(1));
+      if (!el) return;
+      e.preventDefault();
+      var c = document.querySelector(".lex-controls");
+      var off = (c ? c.getBoundingClientRect().bottom : 60) + 14;
+      window.scrollTo({
+        top: el.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop) - off,
+        behavior: "smooth"
+      });
+    });
     document.getElementById("lexReset").addEventListener("click", function () {
       activeLv = { Beginner: true, Advanced: true, Expert: true };
       q = ""; topic = ""; sort = "az";

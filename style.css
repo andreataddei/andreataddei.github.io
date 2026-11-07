@@ -1710,6 +1710,7 @@ article.digest-body a:hover {
 }
 
 .letter-head {
+  scroll-margin-top: 11rem;
   font-family: var(--mono);
   font-size: .78rem;
   letter-spacing: .2em;
