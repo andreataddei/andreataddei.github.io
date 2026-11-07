@@ -787,8 +787,9 @@ window.initStory = function () {
 
     function render() {
       var total = 0, html = "", visible = {};
-      D.ERAS.forEach(function (e) {
-        var items = (D.DATA[e.id] || []).filter(function (m) {
+      var ERAS = D.ERAS.slice().reverse(); // dalla più recente in alto
+      ERAS.forEach(function (e) {
+        var items = (D.DATA[e.id] || []).slice().reverse().filter(function (m) {
           return active[m[1]] && (!q || (m[2] + " " + m[3] + " " + m[1]).toLowerCase().indexOf(q) !== -1);
         });
         visible[e.id] = items.length;
@@ -808,7 +809,7 @@ window.initStory = function () {
       app.innerHTML = html;
       emptyEl.style.display = total ? "none" : "block";
       countEl.textContent = total + " of 101 moments";
-      nav.innerHTML = D.ERAS.map(function (e) {
+      nav.innerHTML = ERAS.map(function (e) {
         return '<button data-era="' + e.id + '" style="--ec:' + e.color + '"' + (visible[e.id] ? "" : ' class="dim"') +
           ' type="button"><span class="dot"></span>' + esc(e.name) + ' <span class="yrs">' + e.years + '</span></button>';
       }).join("");
