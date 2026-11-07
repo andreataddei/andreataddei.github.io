@@ -1666,6 +1666,7 @@ article.digest-body a:hover {
   letter-spacing: .08em;
   color: var(--muted);
   margin-left: auto;
+  margin-right: .45rem;
   white-space: nowrap
 }
 
