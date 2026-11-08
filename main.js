@@ -887,6 +887,6 @@ window.initStory();
     if (e.key === "Escape") setOpen(false);
   });
   window.addEventListener("resize", function () {
-    if (window.innerWidth > 760) setOpen(false);
+    if (window.innerWidth > 560) setOpen(false);
   });
 })();

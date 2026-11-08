@@ -2211,8 +2211,7 @@ article.digest-body a:hover {
   height: 40px;
   padding: 0;
   background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 3px;
+  border: 0;
   cursor: pointer
 }
 
@@ -2224,39 +2223,48 @@ article.digest-body a:hover {
   transition: transform .25s, opacity .2s
 }
 
-@media (max-width: 760px) {
+@media (max-width: 560px) {
   .navburger { display: flex }
   nav .wrap { position: static }
   nav ul {
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 3.8rem;
     left: 0;
     right: 0;
+    bottom: 0;
+    z-index: 30;
     flex-direction: column;
-    gap: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 2.4rem;
     margin: 0;
-    padding: 0;
-    max-height: 0;
-    overflow: hidden;
+    padding: 0 1.4rem;
     opacity: 0;
-    background: rgba(6,6,7,.96);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid transparent;
-    transition: max-height .35s ease, opacity .25s ease, border-color .25s
+    pointer-events: none;
+    background: rgba(6,6,7,.98);
+    backdrop-filter: blur(12px);
+    transition: opacity .25s ease
   }
   nav.open ul {
-    max-height: 300px;
     opacity: 1;
-    border-bottom-color: var(--line)
+    pointer-events: auto
   }
   nav ul a {
     display: block;
-    padding: .85rem clamp(1.4rem,5vw,3rem);
-    font-size: .88rem;
-    transition: color .25s, background .25s
+    padding: .3rem 0;
+    font-size: .95rem;
+    letter-spacing: .12em;
+    text-align: center;
+    transition: color .25s
   }
-  nav ul a:hover { background: var(--bg2) }
+  nav ul a:hover { color: var(--fg) }
   nav.open .navburger span:nth-child(1) { transform: translateY(6px) rotate(45deg) }
   nav.open .navburger span:nth-child(2) { opacity: 0 }
   nav.open .navburger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg) }
+}
+
+/* ---------- Mobile: filtri ridotti su lexicon e story ---------- */
+@media (max-width: 560px) {
+  .lex-controls .lex-row { display: none }
+  .st-controls { display: none }
 }
