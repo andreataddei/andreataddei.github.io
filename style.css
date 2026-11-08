@@ -2264,9 +2264,9 @@ article.digest-body a:hover {
     transition: color .25s
   }
   nav ul a:hover { color: var(--fg) }
-  nav.open .navburger span:nth-child(1) { transform: translateY(7px) rotate(45deg) }
+  nav.open .navburger span:nth-child(1) { transform: translateY(6px) rotate(45deg) }
   nav.open .navburger span:nth-child(2) { opacity: 0; transform: scaleX(0) }
-  nav.open .navburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg) }
+  nav.open .navburger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg) }
 }
 
 /* ---------- Mobile: filtri ridotti su lexicon e story ---------- */
