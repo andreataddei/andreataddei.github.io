@@ -2224,6 +2224,10 @@ article.digest-body a:hover {
 }
 
 @media (max-width: 560px) {
+  /* backdrop-filter sulla nav crea un containing block per i position:fixed
+     figli: l'overlay full-screen del menu si posizionerebbe rispetto alla nav
+     invece che alla viewport. Su mobile lo disattiviamo e usiamo un bg quasi opaco. */
+  nav { backdrop-filter: none; background: rgba(6,6,7,.98) }
   .navburger { display: flex }
   nav .wrap { position: static }
   nav ul {
