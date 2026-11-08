@@ -2198,3 +2198,65 @@ article.digest-body a:hover {
   .st-cxrow { grid-template-columns: 1fr; gap: .4rem }
   .st-cxlog { margin-left: 0 }
 }
+
+
+/* ---------- Nav mobile: hamburger menu ---------- */
+.navburger {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  cursor: pointer
+}
+
+.navburger span {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: var(--fg);
+  transition: transform .25s, opacity .2s
+}
+
+@media (max-width: 760px) {
+  .navburger { display: flex }
+  nav .wrap { position: static }
+  nav ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    background: rgba(6,6,7,.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: max-height .35s ease, opacity .25s ease, border-color .25s
+  }
+  nav.open ul {
+    max-height: 300px;
+    opacity: 1;
+    border-bottom-color: var(--line)
+  }
+  nav ul a {
+    display: block;
+    padding: .85rem clamp(1.4rem,5vw,3rem);
+    font-size: .88rem;
+    transition: color .25s, background .25s
+  }
+  nav ul a:hover { background: var(--bg2) }
+  nav.open .navburger span:nth-child(1) { transform: translateY(6px) rotate(45deg) }
+  nav.open .navburger span:nth-child(2) { opacity: 0 }
+  nav.open .navburger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg) }
+}

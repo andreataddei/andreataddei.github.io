@@ -860,3 +860,33 @@ window.initStory = function () {
   document.head.appendChild(s);
 };
 window.initStory();
+
+
+/* ---------- Nav mobile: hamburger (iniettato da JS, nessun markup da mantenere) ---------- */
+(function () {
+  var nav = document.querySelector("nav");
+  if (!nav || !nav.querySelector("ul")) return;
+  var btn = document.createElement("button");
+  btn.className = "navburger";
+  btn.type = "button";
+  btn.setAttribute("aria-label", "Menu");
+  btn.setAttribute("aria-expanded", "false");
+  btn.innerHTML = "<span></span><span></span><span></span>";
+  nav.querySelector(".wrap").appendChild(btn);
+  function setOpen(on) {
+    nav.classList.toggle("open", on);
+    btn.setAttribute("aria-expanded", on ? "true" : "false");
+  }
+  btn.addEventListener("click", function () {
+    setOpen(!nav.classList.contains("open"));
+  });
+  nav.addEventListener("click", function (e) {
+    if (e.target && e.target.closest && e.target.closest("ul a")) setOpen(false);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") setOpen(false);
+  });
+  window.addEventListener("resize", function () {
+    if (window.innerWidth > 760) setOpen(false);
+  });
+})();
