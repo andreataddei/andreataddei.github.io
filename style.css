@@ -2206,7 +2206,7 @@ article.digest-body a:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 4px;
   width: 40px;
   height: 40px;
   padding: 0;
@@ -2218,7 +2218,8 @@ article.digest-body a:hover {
 .navburger span {
   display: block;
   width: 18px;
-  height: 1px;
+  height: 2px;
+  border-radius: 1px;
   background: var(--fg);
   transition: transform .25s, opacity .2s
 }
@@ -2246,6 +2247,7 @@ article.digest-body a:hover {
     opacity: 0;
     pointer-events: none;
     background: rgba(6,6,7,.98);
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     transition: opacity .25s ease
   }
@@ -2262,9 +2264,9 @@ article.digest-body a:hover {
     transition: color .25s
   }
   nav ul a:hover { color: var(--fg) }
-  nav.open .navburger span:nth-child(1) { transform: translateY(6px) rotate(45deg) }
-  nav.open .navburger span:nth-child(2) { opacity: 0 }
-  nav.open .navburger span:nth-child(3) { transform: translateY(-6px) rotate(-45deg) }
+  nav.open .navburger span:nth-child(1) { transform: translateY(7px) rotate(45deg) }
+  nav.open .navburger span:nth-child(2) { opacity: 0; transform: scaleX(0) }
+  nav.open .navburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg) }
 }
 
 /* ---------- Mobile: filtri ridotti su lexicon e story ---------- */
