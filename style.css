@@ -2290,3 +2290,10 @@ article.digest-body a:hover {
   .lex-controls .lex-row { display: none }
   .st-controls { display: none }
 }
+
+/* iOS Safari: doppio tap su hamburger/voci menu zooma la pagina.
+   touch-action: manipulation disattiva il double-tap zoom (pinch e scroll restano). */
+.navburger,
+nav ul a {
+  touch-action: manipulation
+}
