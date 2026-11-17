@@ -144,7 +144,7 @@
         var d = sphereImg.data, td = tex.data, lum = tex.lum;
         var TWO = Math.PI * 2, K = 2.0;
         for (var i = 0; i < pixCount; i++) {
-          var lon = pixLon[i] + ROT;
+          var lon = pixLon[i] - ROT; /* segno invertito: la Terra ruota nel senso opposto */
           var u = (lon / TWO) % 1; if (u < 0) u += 1;
           var tu = (u * TW) | 0, tv = pixV[i];
           var s4 = (tv * TW + tu) * 4;
