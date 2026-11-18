@@ -54,37 +54,10 @@
       var tctx = tc.getContext("2d");
       tctx.drawImage(img, 0, 0, TW, TH);
       var d = tctx.getImageData(0, 0, TW, TH).data;
-      var lum = new Uint8Array(TW * TH);
-      for (var i = 0, p = 0; i < lum.length; i++, p += 4) {
-        lum[i] = (d[p] * 77 + d[p + 1] * 151 + d[p + 2] * 28) >> 8;
-      }
-      // blur 3x3 separabile (orizzontale + verticale = stessa media dei 9 vicini,
-      // 6 letture invece di 9) e a blocchi di righe via setTimeout: niente long task
-      var blur = new Uint8Array(TW * TH);
-      var tmp = new Uint8Array(TW * TH);
-      var by = 0, pass = 0;
-      function blurStep() {
-        var end = Math.min(TH, by + 128);
-        for (; by < end; by++) {
-          var yu = by > 0 ? by - 1 : 0, yd = by < THm ? by + 1 : THm;
-          var ro = by * TW, ru = yu * TW, rd = yd * TW;
-          for (var xx = 0; xx < TW; xx++) {
-            var xl = xx > 0 ? xx - 1 : 0, xr = xx < TWm ? xx + 1 : TWm;
-            if (pass === 0) {
-              tmp[ro + xx] = (lum[ro + xl] + lum[ro + xx] + lum[ro + xr]) / 3;
-            } else {
-              blur[ro + xx] = (tmp[ru + xx] + tmp[ro + xx] + tmp[rd + xx]) / 3;
-            }
-          }
-        }
-        if (by < TH) { setTimeout(blurStep, 0); return; }
-        by = 0; pass++;
-        if (pass === 1) { setTimeout(blurStep, 0); return; }
-        tex.data = d; tex.lum = blur;
-        tex.ready = true;
-        rebuildSphere();
-      }
-      blurStep();
+      // texture notturna: le luci sono emissive, niente bump/lum/blur
+      tex.data = d;
+      tex.ready = true;
+      rebuildSphere();
     } catch (e) { /* resta il fallback */ }
   }
 
@@ -94,14 +67,14 @@
 
   function loadFromRepo() {
     if (window.fetch) {
-      fetch("/earth.txt").then(function (r) { return r.text(); }).then(function (b64) {
+      fetch("/night.txt").then(function (r) { return r.text(); }).then(function (b64) {
         img.src = "data:image/jpeg;base64," + b64.replace(/\s+/g, "");
       }).catch(function () { loadFromCDN(); });
     } else { loadFromCDN(); }
   }
   function loadFromCDN() {
     triedCDN = true;
-    img.src = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/textures/planets/earth_atmos_2048.jpg";
+    img.src = "https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/textures/planets/earth_lights_2048.png";
   }
   loadFromRepo();
 
@@ -141,28 +114,20 @@
       frame++;
       if (texDirty || frame % 6 === 0) {
         texDirty = false;
-        var d = sphereImg.data, td = tex.data, lum = tex.lum;
-        var TWO = Math.PI * 2, K = 2.0;
+        var d = sphereImg.data, td = tex.data;
+        var TWO = Math.PI * 2;
         for (var i = 0; i < pixCount; i++) {
           var lon = pixLon[i] - ROT; /* segno invertito: la Terra ruota nel senso opposto */
           var u = (lon / TWO) % 1; if (u < 0) u += 1;
           var tu = (u * TW) | 0, tv = pixV[i];
           var s4 = (tv * TW + tu) * 4;
-          var li = tv * TW + tu;
-          var oE = tu > 1 ? 2 : (tu > 0 ? 1 : 0), oW = tu < TWm - 1 ? 2 : (tu < TWm ? 1 : 0);
-          var oN = tv > 1 ? 2 : (tv > 0 ? 1 : 0), oS = tv < THm - 1 ? 2 : (tv < THm ? 1 : 0);
-          var ll = lum[li - oE];
-          var lr = lum[li + oW];
-          var lu2 = lum[li - oN * TW];
-          var ld = lum[li + oS * TW];
-          var relief = (ll - lr) * K + (lu2 - ld) * K;
-          var shade = 1 + relief;
-          if (shade < 0.55) shade = 0.55; else if (shade > 1.7) shade = 1.7;
-          if (td[s4 + 2] - td[s4] > 16) shade = 1 + (shade - 1) * 0.22;
-          var sh2 = pixShade[i] * shade, o = pixIdx[i];
-          d[o]     = td[s4]     * sh2;
-          d[o + 1] = td[s4 + 1] * sh2;
-          d[o + 2] = td[s4 + 2] * sh2;
+          var sh = pixShade[i], o = pixIdx[i];
+          var lr = td[s4], lg = td[s4 + 1], lb = td[s4 + 2];
+          /* notte: luci emissive con tinta calda (sodio), oceani near-black,
+             ambiente minimo rgb(2,3,5) per leggere la silhouette sul cielo */
+          d[o]     = 2 + lr * 1.85 * sh;
+          d[o + 1] = 3 + lg * 1.60 * sh;
+          d[o + 2] = 5 + lb * 1.25 * sh;
           d[o + 3] = 255;
         }
         sphereX.putImageData(sphereImg, 0, 0);
@@ -277,6 +242,18 @@
       var sz = s2 % 11 === 0 ? 1.4 : 0.8;
       x.fillRect(hx, hy, sz, sz);
       x.fillRect((hx + W / 2) % W, (hy + H * 0.37) % H, 0.8, 0.8);
+    }
+    x.globalAlpha = 1;
+    // 840 stelle fiole di fondo: campo denso ma tenue, come la prova del 18 nov
+    x.fillStyle = "#cdd6e8";
+    for (var s3 = 0; s3 < 840; s3++) {
+      var fx = ((s3 * 137.5077 + 47.31) % (W * 2) + W + drift * 0.25) % W;
+      var fy = (s3 * 89.7233 + 23.17) % H;
+      var fm = s3 % 21 === 0 ? 0.95 + (s3 % 7) * 0.12 : 0.18 + (s3 % 13) / 13 * 0.45;
+      var ftw = 0.55 + 0.45 * Math.sin(tick * 0.033 + s3 * 1.618);
+      x.globalAlpha = fm * ftw;
+      var fsz = fm > 0.9 ? 1.4 : 0.8;
+      x.fillRect(fx, fy, fsz, fsz);
     }
     x.globalAlpha = 1;
     // stelle e costellazioni vere, con doppio disegno per la continuita' orizzontale
@@ -461,12 +438,7 @@
 
     x.lineWidth = 1;
 
-    var glow = x.createRadialGradient(CX, CY, R * 0.82, CX, CY, R * 1.30);
-    glow.addColorStop(0, "rgba(111,140,255,0.30)");
-    glow.addColorStop(0.45, "rgba(111,140,255,0.10)");
-    glow.addColorStop(1, "rgba(111,140,255,0)");
-    x.fillStyle = glow;
-    x.beginPath(); x.arc(CX, CY, R * 1.30, 0, Math.PI * 2); x.fill();
+    /* niente alone attorno al pianeta: la reference notturna non ha glow */
 
     drawPlanet();
 
