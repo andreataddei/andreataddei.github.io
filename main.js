@@ -430,8 +430,8 @@
 
     /* griglia azzurrina (meridiani e paralleli) rimossa: reference notturna pulita */
 
-    // ---- satelliti reali dai TLE: velocita' e rotazione terrestre coerenti ----
-    var tau = simTau();
+    // ---- satelliti reali dai TLE: 4 volte piu' lenti della rotazione terrestre ----
+    var tau = simTau() / 4;
     for (var si = 0; si < SATS.length; si++) drawSat(SATS[si], tau);
 
     requestAnimationFrame(draw);
