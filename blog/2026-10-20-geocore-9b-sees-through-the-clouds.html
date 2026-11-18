@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>GeoCore-9B Sees Through the Clouds — Downlink — Andrea Taddei</title>
-<meta name="description" content="A 9-billion-parameter geospatial foundation model restores cloud-obscured satellite images to photo-like clarity — trained on ten million images." />
+<title>GeoCore-9B Sees Through the Clouds · Downlink · Andrea Taddei</title>
+<meta name="description" content="A 9-billion-parameter geospatial foundation model restores cloud-obscured satellite images to photo-like clarity, trained on ten million images." />
 <link rel="canonical" href="https://www.andreataddei.com/blog/2026-10-20-geocore-9b-sees-through-the-clouds.html" />
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="Andrea Taddei" />
 <meta property="og:locale" content="en_US" />
-<meta property="og:title" content="GeoCore-9B Sees Through the Clouds — Downlink — Andrea Taddei" />
-<meta property="og:description" content="A 9-billion-parameter geospatial foundation model restores cloud-obscured satellite images to photo-like clarity — trained on ten million images." />
+<meta property="og:title" content="GeoCore-9B Sees Through the Clouds · Downlink · Andrea Taddei" />
+<meta property="og:description" content="A 9-billion-parameter geospatial foundation model restores cloud-obscured satellite images to photo-like clarity, trained on ten million images." />
 <meta property="og:url" content="https://www.andreataddei.com/blog/2026-10-20-geocore-9b-sees-through-the-clouds.html" />
 <meta property="article:published_time" content="2026-10-20T09:00:00+00:00" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="GeoCore-9B Sees Through the Clouds — Downlink — Andrea Taddei" />
-<meta name="twitter:description" content="A 9-billion-parameter geospatial foundation model restores cloud-obscured satellite images to photo-like clarity — trained on ten million images." />
+<meta name="twitter:title" content="GeoCore-9B Sees Through the Clouds · Downlink · Andrea Taddei" />
+<meta name="twitter:description" content="A 9-billion-parameter geospatial foundation model restores cloud-obscured satellite images to photo-like clarity, trained on ten million images." />
 <link rel="stylesheet" href="../style.css?v=2026-11-07p">
 <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
 </head>
@@ -24,7 +24,7 @@
 <canvas id="orbit"></canvas>
 <nav>
   <div class="wrap">
-    <a class="brand" href="../index.html" aria-label="Andrea Taddei — home"><svg class="brand-logo" viewBox="99.4 77.4 379.2 379.2" width="26" height="26" role="img" aria-hidden="true">
+    <a class="brand" href="../index.html" aria-label="Andrea Taddei · home"><svg class="brand-logo" viewBox="99.4 77.4 379.2 379.2" width="26" height="26" role="img" aria-hidden="true">
     <defs>
       <linearGradient id="lg-a" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stop-color="#F58AF4"/><stop offset="0.34" stop-color="#C99BFF"/><stop offset="0.62" stop-color="#75C9FF"/><stop offset="1" stop-color="#38E8D0"/>
@@ -62,10 +62,10 @@
 
   <article class="digest-body rv">
     <p>Satellite images of the Earth are not always easy to use: clouds block the view of the ground, and radar data looks nothing like an ordinary photograph. A team at KAIST addressed both problems at once with <a href="https://www.chosun.com/english/industry-en/2026/10/20/VYE5J7EHYFA2JIBUB7OOP2COZM/" target="_blank" rel="noopener">GeoCore-9B, a geo-aware generative foundation model for Earth observation</a>, trained on some ten million satellite images.</p>
-<p>The capability is twofold. The model reconstructs what lies beneath cloud cover — filling in occluded ground with photo-like clarity — and converts between modalities, turning synthetic-aperture radar input into natural-looking optical output. Because the model is "geo-aware," its outputs respect terrain, geometry and geography rather than hallucinating plausible-looking nonsense; the results show that knowledge gained from generating satellite images also applies to restoring and converting actual observation images.</p>
-<p>The engineering significance is that this is a foundation model, not a bespoke tool. A single nine-billion-parameter network that handles diverse satellite image tasks — reconstruction, conversion, terrain analysis — means shorter development time and lower cost for every downstream application, the researchers note. Disaster response, terrain analysis and change detection all inherit the same trained core.</p>
+<p>The capability is twofold. The model reconstructs what lies beneath cloud cover (filling in occluded ground with photo-like clarity) and converts between modalities, turning synthetic-aperture radar input into natural-looking optical output. Because the model is "geo-aware," its outputs respect terrain, geometry and geography rather than hallucinating plausible-looking nonsense; the results show that knowledge gained from generating satellite images also applies to restoring and converting actual observation images.</p>
+<p>The engineering significance is that this is a foundation model, not a bespoke tool. A single nine-billion-parameter network that handles diverse satellite image tasks (reconstruction, conversion, terrain analysis) means shorter development time and lower cost for every downstream application, the researchers note. Disaster response, terrain analysis and change detection all inherit the same trained core.</p>
 <p>The potential uses concentrate where persistent cloud is a data problem: tropical deforestation monitoring, monsoon-season flood mapping, cloud-covered coastlines. Forty percent of the globe is cloud-obscured in any given moment; a model that credibly sees through it extends usable coverage without launching anything.</p>
-<p>The caveat this field must keep repeating: a generative model's reconstruction is an inference, not an observation. Its proper role is filling measured gaps with labeled, honest estimates — never replacing the instrument. Used as intended, GeoCore-9B is a preview of the next EO stack: one part sensor, one part imagination, clearly labeled which is which. The planets we can see are about to gain the parts we couldn't.</p>
+<p>The caveat this field must keep repeating: a generative model's reconstruction is an inference, not an observation. Its proper role is filling measured gaps with labeled, honest estimates, never replacing the instrument. Used as intended, GeoCore-9B is a preview of the next EO stack: one part sensor, one part imagination, clearly labeled which is which. The planets we can see are about to gain the parts we couldn't.</p>
   </article>
 
   <hr style="border:none;border-top:1px solid var(--line);margin:3rem 0" />
