@@ -694,7 +694,7 @@ window.initLexicon = function () {
 
   if (window.LEXICON_DATA) { build(); return; }
   var s = document.createElement("script");
-  s.src = "/lexicon-data.js?v=1";
+  s.src = "/lexicon-data.js?v=2";
   s.onload = build;
   s.onerror = function () {
     emptyMsg();
@@ -800,7 +800,7 @@ window.initStory = function () {
 
   if (window.STORY_DATA) { build(); return; }
   var s = document.createElement("script");
-  s.src = "/story-data.js?v=1";
+  s.src = "/story-data.js?v=2";
   s.onload = build;
   s.onerror = function () {
     var e = document.getElementById("stEmpty");
